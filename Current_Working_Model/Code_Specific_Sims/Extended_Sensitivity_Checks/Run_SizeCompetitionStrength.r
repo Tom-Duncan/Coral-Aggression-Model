@@ -1,0 +1,58 @@
+# =============================================================================
+#  Run_SizeCompetitionStrength.r   (how much colony SIZE decides contests)
+# -----------------------------------------------------------------------------
+#  Tests the STRENGTH of the size-competition effect: how strongly a larger colony is
+#  favoured when two colonies contest a cell. In the size models, overgrowth probability
+#  is shifted in log-odds by beta * log(size_i / size_j); this sweeps the beta magnitude.
+#  This is to the size effect what the bias sweep was to competition - "how much does
+#  size need to matter before it changes the outcome?"
+#
+#  Sweeps size_beta_max: 0 (size OFF - the control, equivalent to the Classic network),
+#  0.3 (weak), 0.6 (default), 0.9 (strong). Tested on the size-competition models across
+#  networks (RPS, Linear normal + reverse, Random). The profile STRUCTURE (which species
+#  benefit from being large vs small) is preserved; only the magnitude is scaled.
+#
+#  Prediction: stronger size dependence should favour early/large colonies and can erode
+#  coexistence (priority effects), most visibly in the intransitive (RPS) network.
+#
+#  Run length 2500.
+#
+#  RUN:  Rscript Current_Working_Model/Extended_Sensitivity_Checks/Run_SizeCompetitionStrength.r
+#  Output: Current_Working_Model/Results/SizeCompetitionStrength_<timestamp>_results.{rds,csv}
+# =============================================================================
+
+.root <- (function() {
+  a <- commandArgs(FALSE)
+  f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
+  d <- normalizePath(if (length(f)) dirname(f[1]) else getwd(), mustWork = FALSE)
+  while (basename(d) != "Current_Working_Model" &&
+         !dir.exists(file.path(d, "Current_Working_Model")) &&
+         dirname(d) != d) d <- dirname(d)
+  if (basename(d) == "Current_Working_Model") dirname(d) else d
+})()
+setwd(.root)
+cat("Project root:", getwd(), "\n")
+
+SIM_CONFIG <- list(
+  experiment    = paste0("SizeCompetitionStrength_", format(Sys.time(), "%Y%m%d_%H%M%S")),
+  combinations  = c("RPS_sizecompImpact", "Linear_SizeImpactNormal",
+                    "Linear_SizeImpactReverse", "Random_sizecompImpact"),
+  n_species     = c(3, 7),
+  sim_length    = 2500,
+  replicates    = 30,
+  reef          = 50,
+  individuals   = 3,
+  biases        = 0.9,
+  intraspecific = 0.5,
+  size_beta_max = c(0, 0.3, 0.6, 0.9),           # <-- the axis under test (off / weak / default / strong)
+  disturbances  = c("off", "on"),
+  dist_freq     = "often",
+  dist_size     = "random",
+  out_dir       = "Current_Working_Model/Results",
+  checkpoint_every = 10,
+  base_seed     = 1000,
+  to_master     = FALSE
+)
+
+source("Current_Working_Model/Simulation_testing.r")
+cat("\nSize-competition-strength run complete.\n")

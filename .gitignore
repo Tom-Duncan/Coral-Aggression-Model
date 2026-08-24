@@ -1,0 +1,27 @@
+# --- Simulation output & run artifacts: kept off the repo (archived separately) ---
+Simulation_Results/
+Current_Working_Model/Results/
+Current_Working_Model/Plotting_Code/Plots/
+Current_Working_Model/Plotting_Code/Summary_Tables/
+Current_Working_Model/Plotting_Code/Sweep_Summaries/
+*_results.rds
+*_results.csv
+*.rds
+*.csv
+
+# --- Logs / run output ---
+*.log
+*.out
+nohup.out
+
+# --- Stray plot dumps & documents ---
+Rplots.pdf
+*.pdf
+*.png
+
+# --- R / editor / OS cruft ---
+.Rhistory
+.RData
+.Ruserdata
+~$*
+.DS_Store
