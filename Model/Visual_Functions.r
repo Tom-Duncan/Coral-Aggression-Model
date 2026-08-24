@@ -1,8 +1,7 @@
-#File containing all functions related to visualisations of the model
+# Visualisation functions for the model.
 
 
-#Function to create plot of reef matrix with visible cells for each species
-#Converts species letters into numeric values then draws them as different colours on grid
+# Draw the reef grid, colouring each cell by its colony's colour.
 plotReef <- function(reef, corals, timestep_num = NULL) {
   if (is.null(reef)) {
     stop("reef is NULL.")
@@ -10,9 +9,8 @@ plotReef <- function(reef, corals, timestep_num = NULL) {
   if (!is.matrix(reef)) {
     stop(paste("reef must be a matrix, but is:", class(reef)[1]))
   }
-  #Reef may be rectangular: columns are the x-axis (width), rows the y-axis (height)
-  reef_x <- ncol(reef)
-  reef_y <- nrow(reef)
+  reef_x <- ncol(reef)   # width
+  reef_y <- nrow(reef)   # height
   if (length(reef_x) != 1 || is.na(reef_x) || length(reef_y) != 1 || is.na(reef_y)) {
     stop("reef dimensions are not valid numbers.")
   }
@@ -41,14 +39,12 @@ plotReef <- function(reef, corals, timestep_num = NULL) {
     ann = FALSE
   )
 
-  # Reef background
   rect(
     0, 0, reef_x, reef_y,
     col = "white",
     border = NA
   )
 
-  # Coral cells
   for (id in colony_ids) {
     cells <- which(reef == id, arr.ind = TRUE)
 
@@ -69,7 +65,7 @@ plotReef <- function(reef, corals, timestep_num = NULL) {
     }
   }
 
-  # Grid lines INCLUDING the full reef boundary (vertical every x, horizontal every y)
+  # grid lines including the reef boundary
   for (i in 0:reef_x) {
     segments(i, 0, i, reef_y, col = "grey90", lwd = 1)
   }
@@ -77,11 +73,10 @@ plotReef <- function(reef, corals, timestep_num = NULL) {
     segments(0, i, reef_x, i, col = "grey90", lwd = 1)
   }
 
-  # Draw axes exactly on the reef boundary
   axis(1, at = tick_x, labels = round(tick_x), pos = 0)
   axis(2, at = tick_y, labels = round(tick_y), pos = 0, las = 1)
 
-  # Overdraw left/bottom axes in black so they sit on top of pale grid
+  # overdraw left/bottom axes in black, above the pale grid
   segments(0, 0, reef_x, 0, col = "black", lwd = 1)
   segments(0, 0, 0, reef_y, col = "black", lwd = 1)
 
@@ -102,9 +97,7 @@ plotReef <- function(reef, corals, timestep_num = NULL) {
 }
 
 
-#Convenience wrapper: plot the reef at a single given timestep.
-#Enter ONE number (the timestep) and it finds the matching state and labels it.
-#states[[1]] is the initial state (timestep 0), so timestep t lives in states[[t + 1]].
+# Plot the reef at a single timestep (state t is states[[t + 1]]).
 plotReefAtTimestep <- function(states, timestep_num) {
 
   state_index <- timestep_num + 1
@@ -127,14 +120,10 @@ plotReefAtTimestep <- function(states, timestep_num) {
 
 
 
-#Function to create plot of population change over timesteps
-#Tracks each colony individually. Because colonies can split into new colonies
-#mid-run, the set of colonies is gathered from EVERY timestep (not a single fixed
-#list), so fragments born partway through are still counted from their first step.
-#The `corals` argument is accepted for backward compatibility but no longer needed.
+# Per-colony cover through time. Colonies are gathered from every timestep (not a
+# fixed list) so fragments born mid-run are counted. `corals` is kept for compatibility.
 plotIndiAbundance <- function(states, corals = NULL) {
 
-  # Every colony that ever existed, each with its (first-seen) colour
   colony_cols <- character(0)
   for (s in states) {
     for (co in s$corals) {
@@ -149,13 +138,12 @@ plotIndiAbundance <- function(states, corals = NULL) {
 
   n_steps <- length(states)
 
-  # Create abundance table, one column per colony
   abundance <- data.frame(timestep = 0:(n_steps - 1))
   for (id in colony_ids) {
     abundance[[id]] <- numeric(n_steps)
   }
 
-  # Each colony's reef cover (% of reef) at every timestep (0 before it is born)
+  # each colony's cover (% reef) at every step (0 before it is born)
   for (i in seq_along(states)) {
     reef <- states[[i]]$reef
     total_cells <- nrow(reef) * ncol(reef)
@@ -164,11 +152,9 @@ plotIndiAbundance <- function(states, corals = NULL) {
     }
   }
 
-  # Determine y-axis limit (guard against an all-zero / empty case)
   ymax <- max(as.matrix(abundance[, colony_ids, drop = FALSE]))
   if (!is.finite(ymax) || ymax == 0) ymax <- 1
 
-  # Plot first colony
   plot(
     abundance$timestep,
     abundance[[colony_ids[1]]],
@@ -181,7 +167,6 @@ plotIndiAbundance <- function(states, corals = NULL) {
     main = "Coral abundance through time (individual colonies)"
   )
 
-  # Add remaining colonies
   if (length(colony_ids) > 1) {
     for (j in 2:length(colony_ids)) {
       lines(
@@ -193,8 +178,7 @@ plotIndiAbundance <- function(states, corals = NULL) {
     }
   }
 
-  # A full legend is only legible for a handful of colonies; with many
-  # fragments it would swamp the plot, so summarise the count instead
+  # full legend only for a few colonies; otherwise just the count
   if (length(colony_ids) <= 12) {
     legend("topright", legend = colony_ids, col = colony_cols, lwd = 2, cex = 0.8)
   } else {
@@ -206,17 +190,15 @@ plotIndiAbundance <- function(states, corals = NULL) {
   }
 }
 
-#Function to plot population by species instead of individuals
+# Per-species cover through time.
 plotSpeciesAbundance <- function(states, corals, colony_species) {
 
-  #Lookup table
   coral_df <- data.frame(
     id = sapply(corals, function(x) x$id),
     colour = sapply(corals, function(x) x$colour),
     species <- sapply(corals, function(x) x$species)
   )
 
-  #Species-level lookup 
   species_lookup <- aggregate(
     colour ~ species,
     data = coral_df,
@@ -225,7 +207,7 @@ plotSpeciesAbundance <- function(states, corals, colony_species) {
 
   species_ids <- species_lookup$species
   species_cols <- species_lookup$colour
-  names(species_cols) <- species_ids  
+  names(species_cols) <- species_ids
 
   n_steps <- length(states)
 
@@ -240,17 +222,14 @@ plotSpeciesAbundance <- function(states, corals, colony_species) {
 
   for (i in seq_along(states)) {
 
-    # Extract reef state 
     reef <- states[[i]]$reef
 
-    # Convert to species labels 
     species_matrix <- matrix(
     colony_species[reef],
     nrow = nrow(reef),
     ncol = ncol(reef)
 )
 
-    # Each species' reef cover (% of reef) at this timestep
     total_cells <- nrow(reef) * ncol(reef)
     for (sp in species_ids) {
       abundance[[sp]][i] <- sum(species_matrix == sp, na.rm = TRUE) / total_cells * 100
@@ -258,12 +237,8 @@ plotSpeciesAbundance <- function(states, corals, colony_species) {
   }
 
 
-  #Plotting
-
-
   ymax <- max(abundance[, species_ids, drop = FALSE])
 
-  # First species line
   plot(
     abundance$timestep,
     abundance[[species_ids[1]]],
@@ -276,7 +251,6 @@ plotSpeciesAbundance <- function(states, corals, colony_species) {
     main = "Coral abundance through time (by species)"
   )
 
-  # Remaining species lines
   if (length(species_ids) > 1) {
     for (j in 2:length(species_ids)) {
 
@@ -291,7 +265,6 @@ plotSpeciesAbundance <- function(states, corals, colony_species) {
     }
   }
 
-  # Legend
   legend(
     "topright",
     legend = species_ids,
@@ -301,7 +274,7 @@ plotSpeciesAbundance <- function(states, corals, colony_species) {
 }
 
 
-#Function to make gif of abundance change graph
+# GIF of the abundance-through-time plot.
 make_abundance_gif <- function(states,
                                corals,
                                file = "coral_abundance.gif",
@@ -309,15 +282,12 @@ make_abundance_gif <- function(states,
 
   library(animation)
 
-  # Ensure previous graphics devices are closed safely
   if (dev.cur() > 1) dev.off()
 
   on.exit({
     while (dev.cur() > 1) dev.off()
   }, add = TRUE)
 
-  # Every colony that ever existed, each with its (first-seen) colour, since
-  # colonies can split into new colonies partway through the run
   colony_cols <- character(0)
   for (s in states) {
     for (co in s$corals) {
@@ -331,7 +301,6 @@ make_abundance_gif <- function(states,
 
   n_steps <- length(states)
 
-  # Build abundance table once
   abundance <- data.frame(
     timestep = 0:(n_steps - 1)
   )
@@ -405,12 +374,11 @@ make_abundance_gif <- function(states,
 
 
 
-#--------COLONY SIZE TRACKING----------
+# -------- Colony size tracking --------
 
-#Function to extract colony size time series across all timesteps
+# Colony sizes at every timestep as a long data.frame.
 getColonySizeTimeSeries <- function(states, corals) {
-  
-  # Create data frame to store size data
+
   size_data <- data.frame(
     timestep = integer(0),
     colony_id = character(0),
@@ -418,17 +386,15 @@ getColonySizeTimeSeries <- function(states, corals) {
     size = integer(0),
     stringsAsFactors = FALSE
   )
-  
-  # Loop through each timestep
+
   for (t in seq_along(states)) {
     timestep_corals <- states[[t]]$corals
-    
-    # For each coral, record its size
+
     for (coral in timestep_corals) {
       size_data <- rbind(
         size_data,
         data.frame(
-          timestep = t - 1,  # Adjust to 0-based indexing
+          timestep = t - 1,   # 0-based
           colony_id = coral$id,
           species = coral$species,
           size = coral$size,
@@ -437,17 +403,15 @@ getColonySizeTimeSeries <- function(states, corals) {
       )
     }
   }
-  
+
   return(size_data)
 }
 
-#Function to create a summary table of colony sizes
+# Per-colony size summary (initial/final/max/min/mean).
 summarizeColonySizes <- function(size_data) {
-  
-  # Get unique colonies
+
   unique_colonies <- unique(size_data$colony_id)
-  
-  # Initialize summary table
+
   summary_table <- data.frame(
     colony_id = character(0),
     species = character(0),
@@ -458,11 +422,10 @@ summarizeColonySizes <- function(size_data) {
     mean_size = numeric(0),
     stringsAsFactors = FALSE
   )
-  
-  # Loop through each colony and calculate stats
+
   for (col_id in unique_colonies) {
     colony_data <- size_data[size_data$colony_id == col_id, ]
-    
+
     summary_table <- rbind(
       summary_table,
       data.frame(
@@ -477,18 +440,18 @@ summarizeColonySizes <- function(size_data) {
       )
     )
   }
-  
+
   return(summary_table)
 }
 
 
+# GIF of the reef growing over time.
 make_coral_gif <- function(states,
                               file = "coral_growth.gif",
             interval = 0.1) {
 
     library(animation)
 
-    # Ensure previous graphics devices are closed safely
     if (dev.cur() > 1) dev.off()
 
     on.exit({
@@ -513,4 +476,3 @@ make_coral_gif <- function(states,
     clean = TRUE
     )
 }
-
