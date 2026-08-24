@@ -1,34 +1,11 @@
-# =============================================================================
-#  Results_Table.r  -  a single tidy results table for large simulation sweeps
-# =============================================================================
-#  MAIN-MODEL copy. Identical storage layer to the one used by the RPS-style
-#  exploration, but kept separate so the main model has its own copy and its own
-#  output folder. (The exploration keeps its version under RPS_Style_Exploration/.)
-#
-#
-#  SHAPE (tidy / long): one row per (run x checkpoint). Every row carries:
-#     run_id      unique id for the simulation run (traceable back to its setup)
-#     experiment  label for the model variation/sweep, so many different
-#                 explorations can live in one growing master table
-#     replicate   stochastic replicate number within a parameter combination
-#     seed        RNG seed used for the run's dynamics (reproducibility)
-#     <params...> every setup parameter (repeated on each of the run's rows)
-#     phase       "initial" (first checkpoint) / "checkpoint" / "final" (last)
-#     timestep    the checkpoint's timestep
-#     <metrics...> the checkpoint outputs (richness, diversity, cover, ...)
-#
-#  The INITIAL and FINAL states are simply the phase == "initial" / "final" rows,
-#  so they are stored alongside every intermediate checkpoint with no special case.
-#
-#  Different experiments may record different parameter/metric columns. They are
-#  combined with a column-union row-bind (rbindUnion): any column a run does not
-#  have is filled with NA. This lets one master table span every model variation.
-#
-# Examples:
-#     RPS : 3 species, 5 indiv, small 30x30, disturbance on, repro off -> 3i5Dr_30x30
-#     Main: 5 species, big 60x60, disturbance off, repro on            -> 5dR_60x60
+# One tidy (long) results table for simulation sweeps: one row per (run x
+# checkpoint), carrying run_id / experiment / replicate / seed / setup params /
+# phase (initial|checkpoint|final) / timestep / metrics. Different experiments may
+# record different columns; rbindUnion combines them (missing cells -> NA), so one
+# master table can span every model variation.
 
 
+# Compact scenario code, e.g. "3i5Dr_30x30".
 scenarioCode <- function(n_species, disturbance_on, reproduction_on,
                          reef_x, reef_y, individuals = NA) {
   onoff <- function(flag, up) if (isTRUE(flag)) up else tolower(up)
@@ -40,10 +17,7 @@ scenarioCode <- function(n_species, disturbance_on, reproduction_on,
 }
 
 
-#  Row-bind a list of data.frames that may have DIFFERENT columns.
-#  The result has the union of all columns; missing cells become NA.
-#  This is what lets many experiments (each with its own parameters) share one
-#  master table without a fixed, ever-growing schema.
+# Row-bind data.frames with different columns; result = union of columns, missing -> NA.
 rbindUnion <- function(dfs) {
   dfs <- Filter(function(d) !is.null(d) && nrow(d) > 0, dfs)
   if (length(dfs) == 0) return(NULL)
@@ -51,7 +25,7 @@ rbindUnion <- function(dfs) {
   all_cols <- unique(unlist(lapply(dfs, names)))
   dfs2 <- lapply(dfs, function(d) {
     for (m in setdiff(all_cols, names(d))) d[[m]] <- NA
-    d[all_cols]                       # reorder to a common column order
+    d[all_cols]
   })
   out <- do.call(rbind, dfs2)
   rownames(out) <- NULL
@@ -59,16 +33,8 @@ rbindUnion <- function(dfs) {
 }
 
 
-#  Assemble ONE run's rows for the master table.
-#    run_id      : unique run id (character)
-#    experiment  : experiment/sweep label (character)
-#    seed        : RNG seed for the run's dynamics
-#    replicate   : replicate number within the parameter combination
-#    params      : named list or 1-row data.frame of setup parameters
-#    checkpoints : data.frame, one row per checkpoint (must contain `timestep`)
-#    scenario    : compact setup code (see scenarioCode); same across replicates
-#  Returns a long data.frame: run/experiment/scenario/replicate/seed + params +
-#  phase + the checkpoint rows, with params/meta recycled across every row.
+# Assemble one run's rows (meta + params + phase + checkpoints), params recycled.
+# checkpoints must contain `timestep`; scenario is the compact setup code.
 assembleRunResults <- function(run_id, experiment, seed, replicate, params, checkpoints,
                                scenario = NA) {
   if (is.null(checkpoints) || nrow(checkpoints) == 0) return(NULL)
@@ -84,7 +50,6 @@ assembleRunResults <- function(run_id, experiment, seed, replicate, params, chec
   )
   param_df <- as.data.frame(params, stringsAsFactors = FALSE)
 
-  #Mark the first / last checkpoint as the initial / final state
   ts    <- checkpoints$timestep
   phase <- ifelse(ts == min(ts), "initial",
            ifelse(ts == max(ts), "final", "checkpoint"))
@@ -100,9 +65,7 @@ assembleRunResults <- function(run_id, experiment, seed, replicate, params, chec
 }
 
 
-#  Save a results table to disk as BOTH an .rds (typed master, fast to reload)
-#  and a .csv (portable, human-readable). Creates `dir` if needed.
-#  Returns the .rds path invisibly.
+# Save a table as .rds (fast reload) + .csv (portable). Returns the .rds path.
 saveResults <- function(results, name, dir = "Results") {
   dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   rds <- file.path(dir, paste0(name, ".rds"))
@@ -114,11 +77,8 @@ saveResults <- function(results, name, dir = "Results") {
 }
 
 
-#  Append a results table to the growing MASTER table (one file for all sweeps).
-#  By default, rows from an experiment already in the master are REPLACED, so
-#  re-running an experiment overwrites its old rows rather than duplicating them
-#  (other experiments are left untouched). Keeps an .rds master + .csv mirror.
-#  Returns the combined table invisibly.
+# Append to the growing master (one file for all sweeps). By default rows from an
+# experiment already present are replaced, so re-running overwrites its old rows.
 appendToMaster <- function(results, master = file.path("Results", "master_results.rds"),
                            replace_existing = TRUE) {
   dir.create(dirname(master), showWarnings = FALSE, recursive = TRUE)
@@ -141,7 +101,7 @@ appendToMaster <- function(results, master = file.path("Results", "master_result
 }
 
 
-#  Load the master table (or any saved .rds results table).
+# Load the master (or any saved .rds results table).
 loadResults <- function(file = file.path("Results", "master_results.rds")) {
   if (!file.exists(file)) {
     stop("No results file at: ", file)
@@ -149,35 +109,15 @@ loadResults <- function(file = file.path("Results", "master_results.rds")) {
   readRDS(file)
 }
 
-# =============================================================================
-#  Save_Simulation.r  -  turn a main-model run into the flat checkpoint table
-# =============================================================================
-#  Records the simulation at checkpoints - the start (t = 0), then every
-#  `interval` timesteps, up to and including the end - and stores each checkpoint
-#  as a row in the tidy results table (see Results_Table.r). This is the main
-#  model's equivalent of the RPS exploration's rpsCheckpointMetrics + save step.
-#
-#  Requires Results_Table.r to be sourced first (assembleRunResults / saveResults
-#  / appendToMaster). Master_Script.r sources both.
-# =============================================================================
 
+# ---- Checkpoint metrics -----------------------------------------------------
 
-# --------------------------------------------------------------------
-#  Community metrics at each checkpoint of ONE run's `states` list.
-#  Samples t = 0, then every `interval` steps, up to the final step (always
-#  including start and end). At each checkpoint, per species (columns named
-#  <species>_cover), plus richness, Shannon diversity, Pielou evenness, total
-#  cover and the live colony count. All cover values are % of the reef.
-#  Works for any number of species (derived from the initial state).
-#  Returns a tidy data.frame: one row per checkpoint.
-# --------------------------------------------------------------------
-# --- Colony size classes (cells): small < 20, medium 20-60, large > 60 -------
-CSIZE_SMALL_MAX  <- 20    # small  : size  < 20 cells
-CSIZE_MEDIUM_MAX <- 60    # medium : 20 <= size < 60 ; large : size >= 60
+# Colony size classes (cells): small < 20, medium 20-60, large > 60.
+CSIZE_SMALL_MAX  <- 20
+CSIZE_MEDIUM_MAX <- 60
 
-# Structural complexity: of all adjacent pairs where BOTH cells are occupied, the
-# fraction that belong to DIFFERENT colonies (edge/interface density of the occupied
-# mosaic). 0 = one uniform patch, ->1 = highly interdigitated. NA if no occupied pairs.
+# Structural complexity: of occupied adjacent pairs, the fraction in DIFFERENT
+# colonies (interface density). 0 = one uniform patch, ->1 = interdigitated. NA if none.
 .structuralComplexity <- function(reef) {
   E <- 0L; Ed <- 0L
   if (ncol(reef) > 1) {                       # horizontal neighbours
@@ -193,8 +133,7 @@ CSIZE_MEDIUM_MAX <- 60    # medium : 20 <= size < 60 ; large : size >= 60
   if (E == 0) NA_real_ else Ed / E
 }
 
-# The SPECIES occupying each cell as a character matrix ("" for empty), used for
-# turnover (colony ids are volatile through splits, so we compare at species level).
+# Species occupying each cell ("" for empty); used for turnover (ids are volatile).
 .speciesGrid <- function(state) {
   ids <- vapply(state$corals, function(x) x$id, character(1))
   sp  <- vapply(state$corals, function(x) x$species, character(1))
@@ -203,8 +142,7 @@ CSIZE_MEDIUM_MAX <- 60    # medium : 20 <= size < 60 ; large : size >= 60
   matrix(out, nrow = nrow(state$reef), ncol = ncol(state$reef))
 }
 
-# Spatial turnover between two states: of the cells occupied at EITHER checkpoint, the
-# fraction whose occupying species changed (a cell emptied, filled, or swapped species).
+# Spatial turnover: of cells occupied at either checkpoint, the fraction whose species changed.
 .turnover <- function(prev_state, cur_state) {
   a <- .speciesGrid(prev_state); b <- .speciesGrid(cur_state)
   occ <- (a != "") | (b != "")
@@ -212,8 +150,7 @@ CSIZE_MEDIUM_MAX <- 60    # medium : 20 <= size < 60 ; large : size >= 60
   sum(a[occ] != b[occ]) / sum(occ)
 }
 
-# Colony deaths between two states: colonies alive (size > 0) at the previous
-# checkpoint that hold 0 cells (or are gone) at the current one.
+# Colony deaths: colonies alive at the previous checkpoint holding 0 cells (or gone) now.
 .deathsBetween <- function(prev_state, cur_state) {
   pid <- vapply(prev_state$corals, function(x) x$id, character(1))
   psz <- vapply(prev_state$corals, function(x) x$size, numeric(1))
@@ -224,15 +161,16 @@ CSIZE_MEDIUM_MAX <- 60    # medium : 20 <= size < 60 ; large : size >= 60
   sum(is.na(cur_of) | cur_of <= 0)
 }
 
+# Community metrics at each checkpoint (t=0, every `interval`, and the final step).
+# Per-species cover (% reef), richness, Shannon, evenness, cover, colony structure.
 mainCheckpointMetrics <- function(states, interval = 10) {
   sim_length  <- length(states) - 1            # states[[1]] is timestep 0
   checkpoints <- seq(0, sim_length, by = interval)
   if (checkpoints[length(checkpoints)] != sim_length) {
-    checkpoints <- c(checkpoints, sim_length)   # always include the final step
+    checkpoints <- c(checkpoints, sim_length)
   }
 
-  #Master species list from the initial state, so an extinct species still shows
-  #as a 0-cover column at every checkpoint
+  # master species list from the initial state (extinct species stay as 0-cover cols)
   species_list <- sort(unique(vapply(states[[1]]$corals,
                                      function(x) x$species, character(1))))
 
@@ -241,20 +179,17 @@ mainCheckpointMetrics <- function(states, interval = 10) {
     state_t  <- states[[t + 1]]
     corals_t <- state_t$corals
     reef_t   <- state_t$reef
-    #Colony $size is a cell count; convert to % of the reef so cover metrics stay a
-    #reef-independent percentage (and comparable to earlier % cover datasets).
+    # $size (cells) -> % of reef so cover is reef-independent
     sizes <- vapply(corals_t, function(x) coralCoverPercent(x, reef_t), numeric(1))
     specs <- vapply(corals_t, function(x) x$species, character(1))
     alive <- sizes > 0
     sizes <- sizes[alive]; specs <- specs[alive]
 
-    #Per-species reef cover (abundance, as % of reef) across all its colonies
     cover       <- vapply(species_list, function(sp) sum(sizes[specs == sp]), numeric(1))
     total_cover <- sum(cover)
     present     <- cover > 0
     richness    <- sum(present)
 
-    #Shannon diversity H' over species relative cover, and Pielou's evenness
     if (total_cover > 0) {
       p       <- cover[present] / total_cover
       shannon <- -sum(p * log(p))
@@ -263,15 +198,12 @@ mainCheckpointMetrics <- function(states, interval = 10) {
     }
     evenness <- if (richness > 1) shannon / log(richness) else NA_real_
 
-    #Colony sizes in CELLS (raw) for the size structure metrics
-    cell_sizes <- vapply(corals_t, function(x) x$size, numeric(1))
+    cell_sizes <- vapply(corals_t, function(x) x$size, numeric(1))   # raw cells for size structure
     live       <- cell_sizes[cell_sizes > 0]
-    #Founding colonies still alive (founders have no parent_id; kept at size 0 if dead)
-    founders_alive <- sum(vapply(corals_t,
+    founders_alive <- sum(vapply(corals_t,   # founders have no parent_id
       function(x) is.null(x$parent_id) && x$size > 0, logical(1)))
 
-    #Between-checkpoint metrics need the previous checkpoint (NA at the first)
-    if (k == 1) {
+    if (k == 1) {   # between-checkpoint metrics need a previous checkpoint
       turnover <- NA_real_; deaths <- NA_real_
     } else {
       prev_state <- states[[checkpoints[k - 1] + 1]]
@@ -308,9 +240,7 @@ mainCheckpointMetrics <- function(states, interval = 10) {
 }
 
 
-# --------------------------------------------------------------------
-#  Was disturbance / reproduction switched on for this replicate?
-# --------------------------------------------------------------------
+# Was disturbance / reproduction on for this replicate?
 mainDisturbanceOn <- function(rep_result) {
   !is.null(rep_result$disturbance) && isTRUE(rep_result$disturbance$enabled)
 }
@@ -320,12 +250,9 @@ mainReproductionOn <- function(rep_result) {
 }
 
 
-# --------------------------------------------------------------------
-#  Basic setup parameters for one replicate result, stored on every row.
-# --------------------------------------------------------------------
+# Setup parameters for one replicate, stored on every row.
 mainRunParams <- function(rep_result, interval) {
   init_corals <- rep_result$states[[1]]$corals
-  #Timesteps disturbance events occurred on (";"-joined), for recovery-rate analysis
   dist_steps <- if (mainDisturbanceOn(rep_result) &&
                     length(rep_result$disturbance$schedule) > 0) {
     paste(rep_result$disturbance$schedule, collapse = ";")
@@ -345,15 +272,8 @@ mainRunParams <- function(rep_result, interval) {
 }
 
 
-# --------------------------------------------------------------------
-#  Build the flat checkpoint table for a whole simulation (WITHOUT saving).
-#  Handles a single-replicate sim (returned as one replicate result) and a
-#  multi-replicate sim (a list with $replicates). One run_id per replicate.
-#    sim        : the object returned by reefSetUp()
-#    experiment : label for this run/variation (goes in the `experiment` column)
-#    seed       : optional RNG seed to record (NA if you did not set one)
-#  Returns the long data.frame (one row per replicate per checkpoint).
-# --------------------------------------------------------------------
+# Flat checkpoint table for a whole sim (without saving). Handles single- and
+# multi-replicate ($replicates) sims; one run_id per replicate.
 collectSimTable <- function(sim, experiment = "main", seed = NA, interval = 10) {
   reps <- if (!is.null(sim$replicates)) sim$replicates else list(sim)
 
@@ -363,8 +283,6 @@ collectSimTable <- function(sim, experiment = "main", seed = NA, interval = 10) 
     params <- mainRunParams(rep_result, interval)
     rep_no <- if (!is.null(rep_result$replicate)) rep_result$replicate else i
 
-    #Compact setup code (reef dimensions at the end; no individuals segment, as
-    #the main model's species count is the leading number)
     scenario <- scenarioCode(
       n_species        = params$n_species,
       disturbance_on   = params$disturbance_on,
@@ -388,13 +306,7 @@ collectSimTable <- function(sim, experiment = "main", seed = NA, interval = 10) 
 }
 
 
-# --------------------------------------------------------------------
-#  Collect the flat checkpoint table for a simulation AND save it: an
-#  <experiment>_results .rds/.csv, and (by default) append into the master.
-#    dir : output folder (defaults to "Results" in the working directory =
-#          the model root when Master_Script.r sets it)
-#  Returns the flat table invisibly, so you can View() it too.
-# --------------------------------------------------------------------
+# Collect the checkpoint table and save it (<experiment>_results + append to master).
 saveSimulation <- function(sim, experiment = "main", seed = NA, interval = 10,
                            dir = "Results", to_master = TRUE) {
   tbl <- collectSimTable(sim, experiment, seed, interval)
@@ -404,4 +316,3 @@ saveSimulation <- function(sim, experiment = "main", seed = NA, interval = 10,
   }
   invisible(tbl)
 }
-
