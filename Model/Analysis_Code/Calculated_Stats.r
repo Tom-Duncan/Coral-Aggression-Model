@@ -1,27 +1,9 @@
-# ==========================================================================
-#  Calculated_Stats.r
-#  DERIVED / post-hoc summary statistics -- measures from the "Table of
-#  measurements" that are CALCULATED rather than logged directly. They are
-#  computed from a master results CSV (per-checkpoint metrics + per-species
-#  cover Sp1_cover..Sp7_cover + colony counts + the full time series).
-#
-#  Each measure is a small function of ONE replicate's time series, so adding a
-#  new one is a one-liner in the `measures` list. The driver runs them per
-#  replicate, then reports mean +/- SD across replicates, per scenario.
-#
-#  Implemented (from the metrics CSV): Simpson (D), Surviving fraction,
-#    Coexistence (species-level), Stability = inverse CV (cover & richness),
-#    Repeatability (= the +/-SD), dominance frequency & duration, mortality rate,
-#    exclusion rate, spatial turnover, and time-to full cover / first extinction
-#    / complete dominance / equilibrium / persistence, plus n small/large.
-#  Added for LATER models (work now with caveats):
-#    Colonisation rate - uses a logged recruits/births column if present, else a
-#      proxy from gross colony gains (counts splits, not just true recruitment);
-#    Recovery rate - post-disturbance, per-species cover regrowth slope; NA for
-#      no-disturbance runs.
-#  Still NOT possible here (need saved colony grid/IDs, not the metrics table):
-#    per-colony cover, full colony size distribution, colony-level coexistence.
-# ==========================================================================
+# Derived / post-hoc summary statistics: measures CALCULATED (not logged directly)
+# from a master results CSV. Each is a small function of one replicate's time series
+# (add one via the `measures` list); the driver runs them per replicate and reports
+# mean +/- SD per scenario. Covers Simpson, surviving fraction, coexistence, stability
+# (inverse CV), dominance, mortality/exclusion, turnover, time-to events, colonisation
+# and recovery rate. Colony-level measures need the saved grid, not the metrics table.
 
 # calc_out_dir (+ the shared table writers) come from Analysis_Utils.r.
 source("Model/Analysis_Code/Analysis_Utils.r")

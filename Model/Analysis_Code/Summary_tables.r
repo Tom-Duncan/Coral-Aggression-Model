@@ -1,11 +1,5 @@
-# ==========================================================================
-#  ACTUAL SUMMARY TABLES
-#  One row per scenario describing its design/settings. Reads a master results
-#  CSV and writes a Word-usable table (a real, editable table - not an image):
-#    - <name>_scenario_summary.csv   (open in Excel, or Insert > Table in Word)
-#    - <name>_scenario_summary.doc   (HTML table; Word opens it as a real table)
-#  Run makeSummaryTable(csv_path) once per master results file.
-# ==========================================================================
+# Scenario summary tables: one row per scenario, read from a master results CSV and
+# written as CSV + a Word-usable .doc. Run makeSummaryTable(csv_path) per master file.
 
 # Shared paths + helpers (summary_out_dir, registry_path, assignScenarioIDs,
 # writeWordTable(s), writeTablePair, stat_metrics/labels, decomposeCombo) all come
@@ -444,34 +438,14 @@ makeConditionStatsTable <- function(csv_path, out_name = NULL, n_check = 10,
 makeConditionStatsTable("Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
 
 
-# ============================================================================
-#  DIVERSITY RETENTION - which combinations keep diversity, replicate by replicate
-# ----------------------------------------------------------------------------
-#  Works from the COMBINED, de-duplicated run index (one row per replicate). Only
-#  the RPS and Random networks are considered (Linear/Neutral excluded), because
-#  those two collapse deterministically and would dominate any "worst" tail.
-#
-#  WHY REPLICATE-LEVEL, NOT THE MEAN: in these networks a single scenario's
-#  replicates are often BIMODAL - some runs hold full coexistence, others collapse
-#  to one species - so the scenario mean is an artefact of two modes and is
-#  misleading. We therefore summarise the DISTRIBUTION across replicates:
-#    * p_retain  - the PROBABILITY a replicate retains diversity (with a Wilson
-#                  95% CI), the ecologically meaningful, mode-robust statistic;
-#    * p_full / p_collapse - the two modes (all species kept / down to one);
-#    * div_median (not just the mean) and Sarle's bimodality coefficient;
-#  and we FLAG scenarios where the mean cannot be trusted:
-#    * flag_bimodal        - both coexistence and collapse modes are populated;
-#    * flag_mean_misleading- bimodal, or mean and median diverge markedly;
-#    * flag_rescue         - >=1 replicate retains diversity while MOST fail
-#                            (the rare "survivor" run a mean would erase).
-#
-#  Retention is measured RELATIVE to the (even) initial community using Hill
-#  numbers, so 3- and 7-species runs are comparable and evenness is not ignored:
-#    div_ret = exp(Shannon)_end / n_species   (proportion of initial Hill-1 kept).
-#  A replicate "retains" if div_ret >= ret_thresh (default 0.5). Because retention
-#  falls with richness and disturbance, n_species and disturbance are part of the
-#  grouping, so combinations are compared like-for-like.
-# ============================================================================
+# Diversity retention, replicate by replicate (from the de-duplicated index; RPS and
+# Random only, as Linear/Neutral collapse deterministically). Because a scenario's
+# replicates are often bimodal (full coexistence vs collapse), the mean is misleading,
+# so we summarise the distribution: p_retain (with Wilson 95% CI), the two modes
+# (p_full / p_collapse), median, bimodality, and flags (bimodal / mean-misleading /
+# rescue = a rare survivor amid collapse). Retention is relative to the initial
+# community via Hill numbers (div_ret = exp(Shannon)_end / n_species; retains if
+# >= ret_thresh, default 0.5); n_species and disturbance are in the grouping.
 if (!requireNamespace("data.table", quietly = TRUE)) stop("please install.packages('data.table')")
 suppressMessages(library(data.table))
 
@@ -649,25 +623,11 @@ traj   <- loadTrajectories(cell)                          # per-timestep rows fo
 # survivor in bold, collapsers faint — is the survivor at a stable equilibrium or just slow?
 
 
-# ============================================================================
-#  ANOMALOUS RICHNESS LOSS - the MIRROR of the rescue analysis
-# ----------------------------------------------------------------------------
-#  Same combined, de-duplicated index, but the NETWORKS INCLUDED ARE RPS, Random
-#  AND Linear (only Neutral is dropped - it retains everything by design, so
-#  "loss when normally retained" is meaningless for it).
-#
-#  Where the rescue analysis flagged rare SURVIVORS amid collapse, this flags the
-#  reverse: within a scenario that NORMALLY RETAINS (p_retain >= loss_norm_thresh,
-#  default 0.75), the individual replicates that nonetheless LOST diversity. These
-#  are the unexpected collapses a scenario mean would smooth over - the fragile
-#  runs revealing a coexistence that is reliable but not guaranteed.
-#
-#  metric = "richness" (default, as requested): retention is judged on the fraction
-#  of SPECIES kept (rich_ret = richness / n_species), so a flagged loss is a genuine
-#  drop in species number. metric = "diversity" judges on Hill-1 (exp(Shannon), so
-#  a collapse of evenness also counts). Severity is reported as species dropped and
-#  the fraction of the metric lost.
-# ============================================================================
+# Anomalous richness loss - the mirror of the rescue analysis (networks RPS, Random,
+# Linear; Neutral dropped as it retains everything). Within a scenario that normally
+# retains (p_retain >= loss_norm_thresh, default 0.75), flags the replicates that
+# nonetheless lost diversity. metric = "richness" (species kept, default) or
+# "diversity" (Hill-1). Severity = species dropped and fraction of the metric lost.
 
 # Per-combination retention summary for the loss analysis (richness or diversity),
 # with a Wilson CI and the "normally retains yet loses" flag. Self-contained so the
