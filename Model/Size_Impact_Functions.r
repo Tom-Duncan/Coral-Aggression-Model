@@ -1,9 +1,5 @@
-# Size helper for coral species
-#
-# Colony $size is a CELL COUNT (the number of cells occupied). This is the single
-# place cells are turned into a % of the reef, used by reproduction scaling and the
-# reported cover metrics. (Competition and growth size effects work on cell counts
-# directly via a log ratio, so they no longer need % cover or size categories.)
+# Colony $size (a cell count) -> % of the reef. Used by reproduction scaling and
+# cover metrics. (Competition/growth size effects use cell counts directly.)
 coralCoverPercent <- function(coral, reef) {
   100 * coral$size / (nrow(reef) * ncol(reef))
 }
