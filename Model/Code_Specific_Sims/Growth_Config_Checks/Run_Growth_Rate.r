@@ -23,18 +23,18 @@
 #
 #  Run length 2500 so the trajectories are visible for the time-to-equilibrium check.
 #
-#  RUN:  Rscript Current_Working_Model/Growth_Config_Checks/Run_Growth_Rate.r
-#  Output: Current_Working_Model/Results/Growth_Rate_<timestamp>_results.{rds,csv}
+#  RUN:  Rscript Model/Growth_Config_Checks/Run_Growth_Rate.r
+#  Output: Model/Results/Growth_Rate_<timestamp>_results.{rds,csv}
 # =============================================================================
 
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
   d <- normalizePath(if (length(f)) dirname(f[1]) else getwd(), mustWork = FALSE)
-  while (basename(d) != "Current_Working_Model" &&
-         !dir.exists(file.path(d, "Current_Working_Model")) &&
+  while (basename(d) != "Model" &&
+         !dir.exists(file.path(d, "Model")) &&
          dirname(d) != d) d <- dirname(d)
-  if (basename(d) == "Current_Working_Model") dirname(d) else d
+  if (basename(d) == "Model") dirname(d) else d
 })()
 setwd(.root)
 cat("Project root:", getwd(), "\n")
@@ -54,11 +54,11 @@ SIM_CONFIG <- list(
   disturbances  = c("off", "on"),                # off = time-rescaling control; on = the real test
   dist_freq     = "often",
   dist_size     = "random",
-  out_dir       = "Current_Working_Model/Results",
+  out_dir       = "Model/Results",
   checkpoint_every = 10,
   base_seed     = 1000,
   to_master     = FALSE
 )
 
-source("Current_Working_Model/Simulation_testing.r")
+source("Model/Simulation_testing.r")
 cat("\nGrowth-rate sensitivity run complete.\n")

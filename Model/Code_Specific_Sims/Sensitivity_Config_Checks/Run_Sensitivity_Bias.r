@@ -14,19 +14,19 @@
 #  NOTE: Classic_Neutral has no overgrowth, so it is bias-invariant - it appears as a
 #  flat control across the bias axis.
 #
-#  RUN:  Rscript Current_Working_Model/Sensitivity_Config_Checks/Run_Sensitivity_Bias.r
-#  Output: Current_Working_Model/Results/Sensitivity_Bias_<timestamp>_results.{rds,csv}
+#  RUN:  Rscript Model/Sensitivity_Config_Checks/Run_Sensitivity_Bias.r
+#  Output: Model/Results/Sensitivity_Bias_<timestamp>_results.{rds,csv}
 # =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Current_Working_Model) --------
+# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
   d <- normalizePath(if (length(f)) dirname(f[1]) else getwd(), mustWork = FALSE)
-  while (basename(d) != "Current_Working_Model" &&
-         !dir.exists(file.path(d, "Current_Working_Model")) &&
+  while (basename(d) != "Model" &&
+         !dir.exists(file.path(d, "Model")) &&
          dirname(d) != d) d <- dirname(d)
-  if (basename(d) == "Current_Working_Model") dirname(d) else d
+  if (basename(d) == "Model") dirname(d) else d
 })()
 setwd(.root)
 cat("Project root:", getwd(), "\n")
@@ -46,12 +46,12 @@ SIM_CONFIG <- list(
   disturbances  = c("off", "on"),
   dist_freq     = "often",                       # baseline regime
   dist_size     = "random",                      # baseline regime
-  out_dir       = "Current_Working_Model/Results",
+  out_dir       = "Model/Results",
   checkpoint_every = 10,
   base_seed     = 1000,
   to_master     = FALSE
 )
 
 # Simulation_testing.r sources the model, runs the grid from SIM_CONFIG, and saves.
-source("Current_Working_Model/Simulation_testing.r")
+source("Model/Simulation_testing.r")
 cat("\nCompetition-bias sensitivity run complete.\n")

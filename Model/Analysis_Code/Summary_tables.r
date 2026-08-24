@@ -10,7 +10,7 @@
 # Shared paths + helpers (summary_out_dir, registry_path, assignScenarioIDs,
 # writeWordTable(s), writeTablePair, stat_metrics/labels, decomposeCombo) all come
 # from Analysis_Utils.r - defined in one place, no side effects on source.
-source("C:/Users/dell/Documents/Research Project 2/Modelling/Current_Working_Model/Plotting_Code/Analysis_Utils.r")
+source("C:/Users/dell/Documents/Research Project 2/Modelling/Model/Analysis_Code/Analysis_Utils.r")
 
 # --- Build the one-row-per-scenario design table ----------------------------
 # Columns: ID, Scenario, Matrix, N0 Species, N0 Colonies, Disturbance,

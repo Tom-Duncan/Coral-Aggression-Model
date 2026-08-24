@@ -10,30 +10,30 @@
 #
 #  HOW TO RUN
 #    Usually driven by Run_Models.r (which pre-defines SIM_CONFIG). Directly:
-#      "C:/Program Files/R/R-4.5.1/bin/Rscript.exe" "Current_Working_Model/Simulation_testing.r"
+#      "C:/Program Files/R/R-4.5.1/bin/Rscript.exe" "Model/Simulation_testing.r"
 #    R session:
-#      source("Current_Working_Model/Simulation_testing.r")
+#      source("Model/Simulation_testing.r")
 #
 #  Edit the SIM_CONFIG block to choose which combinations to sweep. Every vector
 #  field is crossed into a full grid, and each combination runs for `replicates`
 #  stochastic replicates. Results land in
-#      Current_Working_Model/Results/<experiment>_results.{rds,csv}
+#      Model/Results/<experiment>_results.{rds,csv}
 # =============================================================================
 
 # Set the working directory to the project root (the folder that CONTAINS
-# "Current_Working_Model") unless a caller (e.g. Run_Models.r) already did. No
+# "Model") unless a caller (e.g. Run_Models.r) already did. No
 # absolute path is hard-coded, so this runs on any machine / over a VPN. When
 # launched with Rscript the script's own location is used; otherwise we walk up
 # from the current working directory.
-if (!file.exists("Current_Working_Model/Saving_Functions.r")) {
+if (!file.exists("Model/Saving_Functions.r")) {
   .findRoot <- function() {
     a <- commandArgs(FALSE)
     f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
     start <- if (length(f)) dirname(normalizePath(f[1], mustWork = FALSE)) else getwd()
     d <- normalizePath(start, mustWork = FALSE)
     repeat {
-      if (basename(d) == "Current_Working_Model") return(dirname(d))
-      if (dir.exists(file.path(d, "Current_Working_Model"))) return(d)
+      if (basename(d) == "Model") return(dirname(d))
+      if (dir.exists(file.path(d, "Model"))) return(d)
       p <- dirname(d)
       if (p == d) break
       d <- p
@@ -48,10 +48,10 @@ if (!file.exists("Current_Working_Model/Saving_Functions.r")) {
   "Size_Impact_Functions.r", "Intialisation_Functions.r", "Disturbance_Functions.r",
   "Sim_func.r", "Reproduction_Functions.r", "Visual_Functions.r", "Saving_Functions.r"
 )
-for (f in .model_files) source(file.path("Current_Working_Model", f))
+for (f in .model_files) source(file.path("Model", f))
 
 # ---- Trait-combination builders (the competition-network matrices) ----
-source("Current_Working_Model/Trait_Combinations.r")
+source("Model/Trait_Combinations.r")
 
 
 # =============================================================================
@@ -76,7 +76,7 @@ if (!exists("SIM_CONFIG")) SIM_CONFIG <- list(
   background_chance = 0.10,               # reef only: background recruitment chance per species (per pulse)
   supply_mode      = "pulse",             # reef only: "pulse" (periodic) or "continuous" (stochastic trickle, matched supply)
   base_seed     = 1000,                   # seeds are derived from this (reproducible)
-  out_dir       = "Current_Working_Model/Results",
+  out_dir       = "Model/Results",
   checkpoint_every = 10                   # metrics recorded every N steps (+ start/end)
 )
 

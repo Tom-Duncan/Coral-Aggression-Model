@@ -1,7 +1,7 @@
 
 #  RUN FROM A TERMINAL (project root or anywhere - the path is resolved):
 #     "C:\Program Files\R\R-4.5.1\bin\Rscript.exe" ^
-#         "Current_Working_Model/Run_Models.r" --replicates=100 --run_name=batch1
+#         "Model/Run_Models.r" --replicates=100 --run_name=batch1
 
 #  Each invocation writes its OWN standalone results file,
 #     <out_dir>/<run_name>_<timestamp>_results.{rds,csv}
@@ -12,7 +12,7 @@
 
 
 # --- Locate the project root robustly, so NO absolute path is hard-coded. ----
-#  The root is the directory that CONTAINS "Current_Working_Model". Works when
+#  The root is the directory that CONTAINS "Model". Works when
 #  launched with Rscript (uses the script's own location) and when sourced in an
 #  interactive session (walks up from the working directory).
 findProjectRoot <- function() {
@@ -21,8 +21,8 @@ findProjectRoot <- function() {
   start <- if (length(f)) dirname(normalizePath(f[1], mustWork = FALSE)) else getwd()
   d <- normalizePath(start, mustWork = FALSE)
   repeat {
-    if (basename(d) == "Current_Working_Model") return(dirname(d))
-    if (dir.exists(file.path(d, "Current_Working_Model"))) return(d)
+    if (basename(d) == "Model") return(dirname(d))
+    if (dir.exists(file.path(d, "Model"))) return(d)
     p <- dirname(d)
     if (p == d) break            # reached the filesystem root
     d <- p
@@ -82,7 +82,7 @@ CONFIG <- list(
 
   # ---- OUTPUT --------------------------------------------------------------
   run_name    = "AllModels_sweep",               # labels the output files
-  out_dir     = "Current_Working_Model/Results", # where results are saved
+  out_dir     = "Model/Results", # where results are saved
   save_every  = 10,                              # record metrics every N timesteps
   seed        = 1000,                            # base RNG seed (reproducible)
   unique_runs = TRUE                             # timestamp each run so batches accumulate
@@ -149,7 +149,7 @@ SIM_CONFIG <- list(
 
 # Sources the model, the trait-combination builders and the run engine, then runs
 # SIM_CONFIG and saves the results table. Afterwards `sim_results` holds the table.
-source("Current_Working_Model/Simulation_testing.r")
+source("Model/Simulation_testing.r")
 
 cat("\nDone. Results saved to",
     file.path(CONFIG$out_dir, paste0(experiment_label, "_results.rds")), "\n")

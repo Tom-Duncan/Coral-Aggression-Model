@@ -4,25 +4,25 @@
 setwd("C:/Users/dell/Documents/Research Project 2/Modelling")
 
 #Size helper: colony cell count -> % reef cover (for reproduction + metrics)
-source("Current_Working_Model/Size_Impact_Functions.r")
+source("Model/Size_Impact_Functions.r")
 
 #Setup, colony creation, coordinate shapes, and the pairwise overgrowth matrix
-source("Current_Working_Model/Intialisation_Functions.r")
+source("Model/Intialisation_Functions.r")
 
 #Disturbance events
-source("Current_Working_Model/Disturbance_Functions.r")
+source("Model/Disturbance_Functions.r")
 
 #Simulation core (growth, competition, timestep) + colony split/merge tracking
-source("Current_Working_Model/Sim_func.r")
+source("Model/Sim_func.r")
 
 #Coral reproduction (colonies spawn new recruits) + habitat / background recruitment
-source("Current_Working_Model/Reproduction_Functions.r")
+source("Model/Reproduction_Functions.r")
 
 #Plots, gifs and colony-size summaries
-source("Current_Working_Model/Visual_Functions.r")
+source("Model/Visual_Functions.r")
 
 #Per-run data collection, the flat checkpoint results table, and saving
-source("Current_Working_Model/Saving_Functions.r")
+source("Model/Saving_Functions.r")
 
 #--------RUNNING CODE----------
 

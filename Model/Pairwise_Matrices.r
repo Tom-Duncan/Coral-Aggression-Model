@@ -18,7 +18,7 @@
 # Needs the matrix builders (makeTraitMatrix, rpsMatrix, ...). Source them if this
 # file is used on its own; harmless if they are already loaded.
 if (!exists("makeTraitMatrix")) {
-  source(file.path("Current_Working_Model", "Trait_Combinations.r"))
+  source(file.path("Model", "Trait_Combinations.r"))
 }
 
 
