@@ -1,25 +1,7 @@
-# =============================================================================
 #  Run_MaturityAge.r   (life-history: age at first reproduction)
-# -----------------------------------------------------------------------------
-#  Tests how the AGE AT FIRST REPRODUCTION shapes the community. A colony must survive
-#  MATURITY_AGE timesteps before it can spawn any recruit. This is a life-history
-#  bottleneck that interacts with disturbance: if die-offs kill colonies before they
-#  mature, reproduction is effectively suppressed, so a species must reach reproductive
-#  age FAST to persist under disturbance.
-#
 #  Sweeps maturity age: 10 (breeds young / fast life history), 30 (default), 60 (slow;
-#  must survive long before contributing recruits). Maturity only bites when reproduction
-#  is ON, so it is tested on the equal-reproduction models of the 4 networks (a clean
-#  "recruitment present" set that isolates the maturity effect).
-#
-#  Prediction: high maturity age should hurt most under disturbance (the recruitment
-#  bottleneck), and the OFF arm shows the effect without the disturbance interaction.
-#
-#  Run length 2500.
-#
 #  RUN:  Rscript Model/Extended_Sensitivity_Checks/Run_MaturityAge.r
 #  Output: Model/Results/MaturityAge_<timestamp>_results.{rds,csv}
-# =============================================================================
 
 .root <- (function() {
   a <- commandArgs(FALSE)

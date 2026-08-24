@@ -1,23 +1,7 @@
-# =============================================================================
 #  Run_BackgroundRecruitment.r   (metacommunity / rescue-effect experiment)
-# -----------------------------------------------------------------------------
-#  Tests OPEN vs CLOSED community. With background recruitment on, larvae arrive from
-#  OUTSIDE the modelled patch every 30 steps - each species gets an independent chance
-#  to settle a recruit on empty reef - so a LOCALLY-extinct species can return (the
-#  rescue effect of metacommunity theory). This decouples local from regional diversity.
-#
 #  Sweeps the per-species external-larva chance: 0 (CLOSED community, the control),
-#  0.1 (low external supply), 0.3 (high). Background recruitment is independent of a
-#  model's own reproduction, so it is tested on the 4 base network models.
-#
-#  Prediction: rescue should matter most where local extinction otherwise occurs
-#  (Linear hierarchy) and under disturbance (recruits recolonise die-off gaps).
-#
-#  Run length 2500 (t2500 lets slow rescue/recolonisation dynamics equilibrate).
-#
 #  RUN:  Rscript Model/Extended_Sensitivity_Checks/Run_BackgroundRecruitment.r
 #  Output: Model/Results/BackgroundRecruitment_<timestamp>_results.{rds,csv}
-# =============================================================================
 
 .root <- (function() {
   a <- commandArgs(FALSE)

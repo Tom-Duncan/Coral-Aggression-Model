@@ -1,24 +1,8 @@
-# =============================================================================
 #  Run_Sensitivity_Bias.r
-# -----------------------------------------------------------------------------
 #  PARAMETER SENSITIVITY: competition bias.
-#  Sweeps the competition bias (the stronger competitor's win probability in a decided
-#  pair) from 0.5 (a coin flip - no competitive advantage) to 1.0 (always wins), on the
-#  4 base network models, to see how the coexistence/exclusion balance shifts with how
-#  decisive competition is.
-#
-#  Standard settings otherwise: 30 replicates, 1000 timesteps, reef 50, species {3,5,7},
-#  disturbance off/on at the baseline regime. Founders fixed at 3 (single value) so the
-#  bias axis is not multiplied out - widen `individuals` if you want the founder sweep.
-#
-#  NOTE: Classic_Neutral has no overgrowth, so it is bias-invariant - it appears as a
-#  flat control across the bias axis.
-#
 #  RUN:  Rscript Model/Sensitivity_Config_Checks/Run_Sensitivity_Bias.r
 #  Output: Model/Results/Sensitivity_Bias_<timestamp>_results.{rds,csv}
-# =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))

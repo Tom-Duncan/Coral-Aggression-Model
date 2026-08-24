@@ -1,28 +1,8 @@
-# =============================================================================
 #  Run_Sensitivity_DisturbanceRegime.r
-# -----------------------------------------------------------------------------
 #  PARAMETER SENSITIVITY: disturbance regime (frequency x intensity).
-#  Crosses disturbance FREQUENCY {rarely, often, very_often} with INTENSITY (patch
-#  size) {small, medium, large} - 9 regimes - plus a disturbance-OFF baseline, on the
-#  4 base network models. Tests how the frequency and intensity of mass die-offs shape
-#  coexistence/richness (e.g. the Intermediate Disturbance Hypothesis: does a moderate
-#  regime maximise richness?).
-#
-#  The engine now sweeps AND records dist_freq/dist_size, so every row is labelled with
-#  its regime (off rows carry NA for both, and are not duplicated across regimes).
-#
-#  Standard settings otherwise: 30 replicates, 1000 timesteps, reef 50, species {3,5,7},
-#  bias 0.9. Founders fixed at 3 (single value) so the regime axes are not multiplied
-#  out - widen `individuals` if you want the founder sweep too.
-#
-#  Frequency: rarely ~1 / often ~2 / very_often ~4 events per 100 steps.
-#  Intensity: small 10% / medium 20% / large 30% of the reef per event.
-#
 #  RUN:  Rscript Model/Sensitivity_Config_Checks/Run_Sensitivity_DisturbanceRegime.r
 #  Output: Model/Results/Sensitivity_DisturbanceRegime_<timestamp>_results.{rds,csv}
-# =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))

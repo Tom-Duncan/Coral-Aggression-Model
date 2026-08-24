@@ -1,31 +1,7 @@
-# =============================================================================
 #  Run_Growth_Rate.r   (Growth-rate experiment: uniform growth x disturbance)
-# -----------------------------------------------------------------------------
-#  Tests how the COLONY GROWTH RATE (vegetative expansion speed) affects the
-#  outcomes, on the 4 base network models. Growth is the uniform base trait 1-5,
-#  which maps to per-cell expansion probability {1:15%, 2:30%, 3:45%, 4:60%, 5:75%};
 #  here we sweep the extremes + midpoint: SLOW (1), MEDIUM (3, the default), FAST (5).
-#
-#  KEY DESIGN POINT: a uniform growth increase, on its own, mostly just rescales the
-#  clock - the competitive END STATE is set by the interaction matrix, not by how fast
-#  equally-fast colonies grow. Growth becomes a genuine end-state lever only when it
-#  interacts with a FIXED-CLOCK process. So this run crosses growth with DISTURBANCE:
-#    * disturbance OFF  = the control (predict: end states ~ invariant to growth,
-#                         just reached faster - i.e. pure time-rescaling);
-#    * disturbance ON   = the real test (predict: faster growth lets the community
-#                         "outrun" disturbance - a different balance, not just speed).
-#
-#  Analyse the ENDPOINT and the TIME-TO-EQUILIBRIUM together: that is what
-#  distinguishes "faster to the same end state" from "a genuinely different end state".
-#
-#  (The complementary BETWEEN-species growth trade-off is already covered by the
-#  growthImpact models - RPS_growthImpact / Linear_GrowthImpact - in the main run.)
-#
-#  Run length 2500 so the trajectories are visible for the time-to-equilibrium check.
-#
 #  RUN:  Rscript Model/Growth_Config_Checks/Run_Growth_Rate.r
 #  Output: Model/Results/Growth_Rate_<timestamp>_results.{rds,csv}
-# =============================================================================
 
 .root <- (function() {
   a <- commandArgs(FALSE)

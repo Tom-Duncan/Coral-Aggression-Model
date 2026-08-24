@@ -1,12 +1,6 @@
-# =============================================================================
-#  Analysis_Utils.r  -  shared helpers for the results summary / analysis scripts
-# -----------------------------------------------------------------------------
-#  Pure DEFINITIONS only - sourcing this file has no side effects (no batch jobs,
-#  no package installs, nothing written). Sourced by Summary_tables.r,
-#  Calculated_Stats.r, Practicing_ideal_graphs.r and Hypo-test-results-analysis.r
-#  so the scenario-ID codebook, the Word/CSV table writers, the shared metric set
-#  and decomposeCombo() live in ONE place instead of being copy-pasted.
-# =============================================================================
+# Shared helpers for the results-summary scripts (definitions only, no side effects):
+# the scenario-ID codebook, Word/CSV table writers, the shared metric set, and
+# decomposeCombo(). Sourced by Summary_tables.r, Calculated_Stats.r and others.
 
 # --- shared paths ------------------------------------------------------------
 RESULTS_DIR     <- "Simulation_Results"

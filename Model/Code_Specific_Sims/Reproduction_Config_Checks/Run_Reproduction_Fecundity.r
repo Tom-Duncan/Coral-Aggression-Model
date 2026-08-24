@@ -1,21 +1,7 @@
-# =============================================================================
 #  Run_Reproduction_Fecundity.r   (Reproduction experiment A: dose-response)
-# -----------------------------------------------------------------------------
-#  Tests how the MAGNITUDE of reproduction (base per-timestep spawn chance) affects
 #  the outcomes, holding the reproduction STRUCTURE (even vs graded) fixed. Sweeps the
-#  base fecundity across a WIDE range so the dose-response is obvious: from
-#  recruitment-limited (0.02) up to recruitment-dominated (0.80).
-#
-#  Uses only reproduction-ON models (even + graded per network, plus the Linear
-#  competition-fecundity trade-off pair). Reproduction OFF is the Classic_* baseline,
-#  already in the main 22-model run, so it is not repeated here.
-#
-#  Run length 2500 (not 1000): recruitment adds slow dynamics, so the longer runs let
-#  the metrics reach equilibrium (verify with the time-convergence diagnostic).
-#
 #  RUN:  Rscript Model/Reproduction_Config_Checks/Run_Reproduction_Fecundity.r
 #  Output: Model/Results/Reproduction_Fecundity_<timestamp>_results.{rds,csv}
-# =============================================================================
 
 .root <- (function() {
   a <- commandArgs(FALSE)

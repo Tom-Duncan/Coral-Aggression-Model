@@ -1,24 +1,8 @@
-# =============================================================================
 #  Run_Sensitivity_Intraspecific.r
-# -----------------------------------------------------------------------------
 #  PARAMETER SENSITIVITY: intraspecific competition strength.
-#  Sweeps the matrix DIAGONAL (the same-species overgrowth probability) from 0 (a
-#  colony never overgrows another colony of its OWN species) to 1 (always), on the
-#  4 base network models. Modern coexistence theory predicts coexistence is stabilised
-#  when intraspecific competition is strong relative to interspecific - this tests
-#  whether the model behaves that way.
-#
-#  NOTE: for Classic_Neutral the diagonal is the ONLY non-zero interaction, so this
-#  sweep is especially meaningful there (it is the only competition present).
-#
-#  Standard settings otherwise: 30 replicates, 1000 timesteps, reef 50, species {3,5,7},
-#  bias 0.9, disturbance off/on at the baseline regime. Founders fixed at 3.
-#
 #  RUN:  Rscript Model/Sensitivity_Config_Checks/Run_Sensitivity_Intraspecific.r
 #  Output: Model/Results/Sensitivity_Intraspecific_<timestamp>_results.{rds,csv}
-# =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))

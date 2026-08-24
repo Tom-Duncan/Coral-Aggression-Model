@@ -1,19 +1,6 @@
-# =============================================================================
 #  Run_Reproduction_DisturbanceRegime.r  (Reproduction experiment B)
-# -----------------------------------------------------------------------------
-#  Tests whether recruitment's benefit depends on the DISTURBANCE REGIME - i.e. does
-#  reproduction matter more when die-offs are frequent/severe, because recruitment
-#  enables post-disturbance recolonisation (a recovery / storage-like effect)?
-#
-#  Contrast: reproduction OFF (Classic_*) vs ON (equal recruitment, *_reproductionEven)
-#  for each network, crossed with the FULL disturbance regime grid (frequency x
-#  intensity) plus the off baseline.
-#
-#  Run length 2500 (recruitment + recovery dynamics are slow).
-#
 #  RUN:  Rscript Model/Reproduction_Config_Checks/Run_Reproduction_DisturbanceRegime.r
 #  Output: Model/Results/Reproduction_DisturbanceRegime_<timestamp>_results.{rds,csv}
-# =============================================================================
 
 .root <- (function() {
   a <- commandArgs(FALSE)

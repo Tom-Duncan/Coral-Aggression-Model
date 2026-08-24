@@ -1,19 +1,7 @@
-# =============================================================================
 #  Run_Robustness_TimeConvergence.r
-# -----------------------------------------------------------------------------
-#  ROBUSTNESS CHECK 1 of 3: has the model reached equilibrium by timestep 1000?
-#  Re-runs a representative subset for 3000 timesteps (3x the standard length) so you
-#  can confirm the metrics plateau well before 1000 (rather than still drifting).
-#
 #  Re-uses the 4 base network models - NO new models needed - and varies ONLY the
-#  simulation length; every other setting is held at the standard baseline.
-#
-#  RUN (one command, no overrides needed):
-#     Rscript Model/Run_Robustness_TimeConvergence.r
 #  Output: Model/Results/Robustness_TimeConvergence_<timestamp>_results.{rds,csv}
-# =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))

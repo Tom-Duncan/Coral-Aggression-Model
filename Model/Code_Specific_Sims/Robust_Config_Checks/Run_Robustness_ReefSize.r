@@ -1,23 +1,7 @@
-# =============================================================================
 #  Run_Robustness_ReefSize.r
-# -----------------------------------------------------------------------------
-#  ROBUSTNESS CHECK 3 of 3: do the results depend on reef (domain) size?
-#  Re-runs a representative subset across reef sizes 30, 50, 75 and 100 so you can
-#  check whether coexistence / exclusion outcomes are a real property or a
-#  finite-size artifact of the 50x50 grid.
-#
 #  Re-uses the 4 base network models - NO new models needed - and varies ONLY the
-#  reef size; every other setting is held at the standard baseline.
-#
-#  NOTE: larger reefs are slower per simulation (reef 100 has 4x the cells of reef 50),
-#  so this run is dominated by the big-reef scenarios.
-#
-#  RUN (one command, no overrides needed):
-#     Rscript Model/Run_Robustness_ReefSize.r
 #  Output: Model/Results/Robustness_ReefSize_<timestamp>_results.{rds,csv}
-# =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))

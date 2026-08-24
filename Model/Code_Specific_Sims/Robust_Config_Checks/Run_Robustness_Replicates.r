@@ -1,20 +1,7 @@
-# =============================================================================
 #  Run_Robustness_Replicates.r
-# -----------------------------------------------------------------------------
-#  ROBUSTNESS CHECK 2 of 3: are 30 replicates enough for stable estimates?
-#  Re-runs a representative subset with 100 replicates so you can compute the running
-#  mean / CI over 1..100 reps and see where it stabilises. If it settles well before
-#  30, the standard 30 is enough; if not, high-variance scenarios need more.
-#
 #  Re-uses the 4 base network models - NO new models needed - and varies ONLY the
-#  replicate count; every other setting is held at the standard baseline.
-#
-#  RUN (one command, no overrides needed):
-#     Rscript Model/Run_Robustness_Replicates.r
 #  Output: Model/Results/Robustness_Replicates_<timestamp>_results.{rds,csv}
-# =============================================================================
 
-# --- Locate the project root (the folder that CONTAINS Model) --------
 .root <- (function() {
   a <- commandArgs(FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
