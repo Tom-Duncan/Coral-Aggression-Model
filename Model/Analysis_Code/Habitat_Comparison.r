@@ -42,13 +42,11 @@ if (.have_dt) suppressMessages(library(data.table))
   NA_character_
 }
 .cwm <- .ancestorWith("Model")
-MODEL_DIR    <- if (!is.na(.cwm)) file.path(.cwm, "Model") else
-  "C:/Users/dell/Documents/Research Project 2/Modelling/Model"
+MODEL_DIR    <- if (!is.na(.cwm)) file.path(.cwm, "Model") else "Model"          # fallback: relative to repo root
 REAL_INT_MAT <- file.path(MODEL_DIR, "Analysis_Code", "Empirical_Matrices.r")
 MIA_MATRIX   <- file.path(MODEL_DIR, "Interaction_Matrices", "Mia's_Matrix.r")
 .resr <- .ancestorWith("Simulation_Results")
-RESULTS_DIR  <- if (!is.na(.resr)) file.path(.resr, "Simulation_Results") else
-  "C:/Users/dell/Documents/Research Project 2/Simulation_Results"
+RESULTS_DIR  <- if (!is.na(.resr)) file.path(.resr, "Simulation_Results") else "Simulation_Results"
 
 index_path <- file.path(RESULTS_DIR, "0_Combined_Master", "run_index.rds")
 out_csv    <- file.path(RESULTS_DIR, "0_Combined_Master", "final_run_coverage.csv")

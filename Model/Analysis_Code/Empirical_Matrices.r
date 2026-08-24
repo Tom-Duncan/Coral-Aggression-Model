@@ -258,7 +258,8 @@ writeDaiExcel <- function(out_dir = interaction_xlsx_dir) {
 
 #The observed records live inside the original download zip (training + test CSVs);
 #they are combined on read, so no intermediate file needs to be kept on disk.
-observed_interactions_zip <- "C:/Users/dell/Downloads/coralcompetition-inputOutputCode.zip"
+#Point this at your local copy of the Precoda et al. (2017) contest-data download.
+observed_interactions_zip <- "coralcompetition-inputOutputCode.zip"
 
 loadObservedInteractions <- function(zip = observed_interactions_zip) {
   tr <- read.csv(unz(zip, "coralInteractions-Training.csv"), stringsAsFactors = FALSE)
