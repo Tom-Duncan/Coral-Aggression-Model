@@ -10,7 +10,7 @@
 # Shared paths + helpers (summary_out_dir, registry_path, assignScenarioIDs,
 # writeWordTable(s), writeTablePair, stat_metrics/labels, decomposeCombo) all come
 # from Analysis_Utils.r - defined in one place, no side effects on source.
-source("C:/Users/dell/Documents/Research Project 2/Modelling/Model/Analysis_Code/Analysis_Utils.r")
+source("Model/Analysis_Code/Analysis_Utils.r")
 
 # --- Build the one-row-per-scenario design table ----------------------------
 # Columns: ID, Scenario, Matrix, N0 Species, N0 Colonies, Disturbance,
@@ -99,37 +99,37 @@ makeCombinedSummary <- function(csv_paths, out_name, out_dir = summary_out_dir) 
 #Sim 3, Parameter Sensitivity (disturbance regime) ALL DONE
 
 #Sim 3, bias sensitivity - register + scenario table
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Bias_Sensitivity_Checks/Master_Sensitivity_Bias_20260731_010903_results.csv")
+makeSummaryTable("Simulation_Results/3_Parameter_Sensitivity/Bias_Sensitivity_Checks/Master_Sensitivity_Bias_20260731_010903_results.csv")
 
 #Sim 3, intraspecific competition sensitivity - register + scenario table
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Intra_Sens_Test/Master_Sensitivity_Intraspecific_20260731_054833_results.csv")
+makeSummaryTable("Simulation_Results/3_Parameter_Sensitivity/Intra_Sens_Test/Master_Sensitivity_Intraspecific_20260731_054833_results.csv")
 
 #Sim 3 reproduction sensitivity 
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Sens_Test/Reproduction_Fecundity_20260731_222545_results.csv")
+makeSummaryTable("Simulation_Results/3_Parameter_Sensitivity/Repro_Sens_Test/Reproduction_Fecundity_20260731_222545_results.csv")
 
 #Sim 3 reproduction x disturbance regime 
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
+makeSummaryTable("Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
 
 #Sim 3.1 Background recruitment
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/BackRecruit_Sens/BackgroundRecruitment_20260802_025433_results.csv")
+makeSummaryTable("Simulation_Results/3.1_Extended_Sensitivity/BackRecruit_Sens/BackgroundRecruitment_20260802_025433_results.csv")
 
 #Sim 3.1 
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/GrowthRate_Sens/Growth_Rate_20260801_230519_results.csv")
+makeSummaryTable("Simulation_Results/3.1_Extended_Sensitivity/GrowthRate_Sens/Growth_Rate_20260801_230519_results.csv")
 
 #Sim 3.1 Maturity Age
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/MaturityAge_Sens/MaturityAge_20260802_071441_results.csv")
+makeSummaryTable("Simulation_Results/3.1_Extended_Sensitivity/MaturityAge_Sens/MaturityAge_20260802_071441_results.csv")
 
 #Sim 3.1 Size competition
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/SizeComp_Sens/SizeCompetitionStrength_20260802_115434_results.csv")
+makeSummaryTable("Simulation_Results/3.1_Extended_Sensitivity/SizeComp_Sens/SizeCompetitionStrength_20260802_115434_results.csv")
 
 #Sim 5 initial placement
-makeSummaryTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/5_InitialPlacement/InitialPlacement_20260802_215722_results.csv")
+makeSummaryTable("Simulation_Results/5_InitialPlacement/InitialPlacement_20260802_215722_results.csv")
 
 #Sim 4, model exploration - ONE combined scenario table across the 3 master files
 sim4_files <- c(
-  "C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv",
-  "C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Run_20260724_Initial_RPS_RawOutputs/my_run_20260724_174603_results.csv",
-  "C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv"
+  "Simulation_Results/4_Base_model_exploration/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv",
+  "Simulation_Results/4_Base_model_exploration/Run_20260724_Initial_RPS_RawOutputs/my_run_20260724_174603_results.csv",
+  "Simulation_Results/4_Base_model_exploration/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv"
 )
 makeCombinedSummary(sim4_files, out_name = "Sim4_BaseModelExploration_combined")
 
@@ -188,51 +188,51 @@ makeStatsTable <- function(csv_path, n_check = 10, out_dir = summary_out_dir) {
 
 
 #SIM 2 Length (timesteps) test
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/2_Robustness_Checks/TimeConvergence(Timesteps)/Master_Robustness_TimeConvergence_20260727_110034_results.csv")
+makeStatsTable("Simulation_Results/2_Robustness_Checks/TimeConvergence(Timesteps)/Master_Robustness_TimeConvergence_20260727_110034_results.csv")
 
 #Sim 2 reef size test
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/2_Robustness_Checks/ReefSize/Master_Robustness_ReefSize_20260727_132335_results.csv")
+makeStatsTable("Simulation_Results/2_Robustness_Checks/ReefSize/Master_Robustness_ReefSize_20260727_132335_results.csv")
 
 #Sim 2 number of replicates test
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/2_Robustness_Checks/NumReplicates/Master_Robustness_Replicates_20260727_115226_results.csv")
+makeStatsTable("Simulation_Results/2_Robustness_Checks/NumReplicates/Master_Robustness_Replicates_20260727_115226_results.csv")
 
 #Sim 3 disturbance sensitivity
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Run_20260727_Sensitivity_DisturbanceRegime/Master_Sensitivity_DisturbanceRegime_20260727_213926_results.csv")
+makeStatsTable("Simulation_Results/3_Parameter_Sensitivity/Run_20260727_Sensitivity_DisturbanceRegime/Master_Sensitivity_DisturbanceRegime_20260727_213926_results.csv")
 
 #Sim 3 bias
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Bias_Sensitivity_Checks/Master_Sensitivity_Bias_20260731_010903_results.csv")
+makeStatsTable("Simulation_Results/3_Parameter_Sensitivity/Bias_Sensitivity_Checks/Master_Sensitivity_Bias_20260731_010903_results.csv")
 
 #Sim 3 intraspecific competition 
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Intra_Sens_Test/Master_Sensitivity_Intraspecific_20260731_054833_results.csv")
+makeStatsTable("Simulation_Results/3_Parameter_Sensitivity/Intra_Sens_Test/Master_Sensitivity_Intraspecific_20260731_054833_results.csv")
 
 #Sim 3 reproduction
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Sens_Test/Reproduction_Fecundity_20260731_222545_results.csv")
+makeStatsTable("Simulation_Results/3_Parameter_Sensitivity/Repro_Sens_Test/Reproduction_Fecundity_20260731_222545_results.csv")
 
 #Sim 3 reproduction x disturbance regime (mixed conditions)
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
+makeStatsTable("Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
 
 
 
 #Sim 3.1 growth rate
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/GrowthRate_Sens/Growth_Rate_20260801_230519_results.csv")
+makeStatsTable("Simulation_Results/3.1_Extended_Sensitivity/GrowthRate_Sens/Growth_Rate_20260801_230519_results.csv")
 
 #Sim 3.1 Size  competition
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/SizeComp_Sens/SizeCompetitionStrength_20260802_115434_results.csv")
+makeStatsTable("Simulation_Results/3.1_Extended_Sensitivity/SizeComp_Sens/SizeCompetitionStrength_20260802_115434_results.csv")
 
 #Sim 3.1 Background recruitment
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/BackRecruit_Sens/BackgroundRecruitment_20260802_025433_results.csv")
+makeStatsTable("Simulation_Results/3.1_Extended_Sensitivity/BackRecruit_Sens/BackgroundRecruitment_20260802_025433_results.csv")
 
 #Sim 3.1 Maturity Age
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/MaturityAge_Sens/MaturityAge_20260802_071441_results.csv")
+makeStatsTable("Simulation_Results/3.1_Extended_Sensitivity/MaturityAge_Sens/MaturityAge_20260802_071441_results.csv")
 
 
 
 #Sim 5 - initial placement
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/5_InitialPlacement/InitialPlacement_20260802_215722_results.csv")
+makeStatsTable("Simulation_Results/5_InitialPlacement/InitialPlacement_20260802_215722_results.csv")
 
 
 #Sim 4 - RPS ROBUSTNESS check
-makeStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Base_Models/Run_20260724_Initial_RPS_RawOutputs/my_run_20260724_174603_results.csv")
+makeStatsTable("Simulation_Results/4_Base_model_exploration/Base_Models/Run_20260724_Initial_RPS_RawOutputs/my_run_20260724_174603_results.csv")
 
 
 
@@ -330,8 +330,8 @@ makeSweepStatsTable <- function(csv_paths, out_name, n_check = 10, species = NUL
 
 # Combine the Full_Run baseline sweep + the AllModels variant sweep into one set:
 makeSweepStatsTable(
-  c("C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Base_Models/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv",
-    "C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Base_Models/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv"),
+  c("Simulation_Results/4_Base_model_exploration/Base_Models/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv",
+    "Simulation_Results/4_Base_model_exploration/Base_Models/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv"),
   out_name = "Sim4_FullSweep_combined")
 
 
@@ -391,8 +391,8 @@ makeSweepStatsSummary <- function(csv_paths, out_name, n_check = 10,
 }
 
 makeSweepStatsSummary(
-  c("C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Base_Models/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv",
-    "C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Base_Models/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv"),
+  c("Simulation_Results/4_Base_model_exploration/Base_Models/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv",
+    "Simulation_Results/4_Base_model_exploration/Base_Models/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv"),
   out_name = "Sim4_FullSweep_combined")
 
 
@@ -441,7 +441,7 @@ makeConditionStatsTable <- function(csv_path, out_name = NULL, n_check = 10,
 }
 
 #Sim 3 - reproduction x disturbance regime (mixed conditions)
-makeConditionStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
+makeConditionStatsTable("Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
 
 
 # ============================================================================
@@ -475,7 +475,7 @@ makeConditionStatsTable("C:/Users/dell/Documents/Research Project 2/Simulation_R
 if (!requireNamespace("data.table", quietly = TRUE)) stop("please install.packages('data.table')")
 suppressMessages(library(data.table))
 
-combined_index_path <- "C:/Users/dell/Documents/Research Project 2/Simulation_Results/0_Combined_Master/run_index.rds"
+combined_index_path <- "Simulation_Results/0_Combined_Master/run_index.rds"
 
 # Parameter columns that define one "combination setting" (a factorial cell).
 RETENTION_GROUP_COLS <- c("combination", "n_species", "disturbance_on", "individuals",

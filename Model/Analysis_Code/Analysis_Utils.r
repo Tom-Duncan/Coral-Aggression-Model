@@ -9,7 +9,7 @@
 # =============================================================================
 
 # --- shared paths ------------------------------------------------------------
-RESULTS_DIR     <- "C:/Users/dell/Documents/Research Project 2/Simulation_Results"
+RESULTS_DIR     <- "Simulation_Results"
 summary_out_dir <- file.path(RESULTS_DIR, "ScenarioID_Sum_Table")   # tables + ID codebook
 calc_out_dir    <- summary_out_dir                                  # (Calculated_Stats.r alias)
 registry_path   <- file.path(summary_out_dir, "scenario_ID_registry.csv")

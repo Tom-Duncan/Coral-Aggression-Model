@@ -20,7 +20,7 @@
 
 suppressMessages(library(data.table))
 
-root    <- "C:/Users/dell/Documents/Research Project 2/Simulation_Results"
+root    <- "Simulation_Results"
 out_dir <- file.path(root, "0_Combined_Master")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 

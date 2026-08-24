@@ -24,7 +24,7 @@
 # ==========================================================================
 
 # calc_out_dir (+ the shared table writers) come from Analysis_Utils.r.
-source("C:/Users/dell/Documents/Research Project 2/Modelling/Model/Analysis_Code/Analysis_Utils.r")
+source("Model/Analysis_Code/Analysis_Utils.r")
 dir.create(calc_out_dir, showWarnings = FALSE, recursive = TRUE)
 
 # --- small helpers ----------------------------------------------------------
@@ -193,55 +193,55 @@ makeCalculatedStats <- function(csv_paths, out_name = NULL, out_dir = calc_out_d
 # time-to metrics scan the full run. Point it at any master results CSV.
 
 #Sim 2 - Reef size
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/2_Robustness_Checks/ReefSize/Master_Robustness_ReefSize_20260727_132335_results.csv")
+makeCalculatedStats("Simulation_Results/2_Robustness_Checks/ReefSize/Master_Robustness_ReefSize_20260727_132335_results.csv")
 
 #Sim 2 - Number of replicates
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/2_Robustness_Checks/NumReplicates/Master_Robustness_Replicates_20260727_115226_results.csv")
+makeCalculatedStats("Simulation_Results/2_Robustness_Checks/NumReplicates/Master_Robustness_Replicates_20260727_115226_results.csv")
 
 
 #Sim 2 - Length of sim
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/2_Robustness_Checks/TimeConvergence(Timesteps)/Master_Robustness_TimeConvergence_20260727_110034_results.csv")
+makeCalculatedStats("Simulation_Results/2_Robustness_Checks/TimeConvergence(Timesteps)/Master_Robustness_TimeConvergence_20260727_110034_results.csv")
 
 #Sim 3 - Parameter sensitivity
 #Sim 3 - disturbance sensitivity
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Dist_Sens_Test/Master_Sensitivity_DisturbanceRegime_20260727_213926_results.csv")
+makeCalculatedStats("Simulation_Results/3_Parameter_Sensitivity/Dist_Sens_Test/Master_Sensitivity_DisturbanceRegime_20260727_213926_results.csv")
 
 #Sim 3 - bias check
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Bias_Sensitivity_Checks/Master_Sensitivity_Bias_20260731_010903_results.csv")
+makeCalculatedStats("Simulation_Results/3_Parameter_Sensitivity/Bias_Sensitivity_Checks/Master_Sensitivity_Bias_20260731_010903_results.csv")
 
 #Sim 3 - Intraspecific competition
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Intra_Sens_Test/Master_Sensitivity_Intraspecific_20260731_054833_results.csv")
+makeCalculatedStats("Simulation_Results/3_Parameter_Sensitivity/Intra_Sens_Test/Master_Sensitivity_Intraspecific_20260731_054833_results.csv")
 
 #Sim 3 - reproduction
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Sens_Test/Reproduction_Fecundity_20260731_222545_results.csv")
+makeCalculatedStats("Simulation_Results/3_Parameter_Sensitivity/Repro_Sens_Test/Reproduction_Fecundity_20260731_222545_results.csv")
 
 #Sim 3 - reproduction x disturbance regime (mixed conditions)
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
+makeCalculatedStats("Simulation_Results/3_Parameter_Sensitivity/Repro_Dist_sens_Test/Reproduction_DisturbanceRegime_20260801_123052_results.csv")
 
 
 
 #Sim 3.1 growth rate
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/GrowthRate_Sens/Growth_Rate_20260801_230519_results.csv")
+makeCalculatedStats("Simulation_Results/3.1_Extended_Sensitivity/GrowthRate_Sens/Growth_Rate_20260801_230519_results.csv")
 
 #Sim 3.1 Size  competition
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/SizeComp_Sens/SizeCompetitionStrength_20260802_115434_results.csv")
+makeCalculatedStats("Simulation_Results/3.1_Extended_Sensitivity/SizeComp_Sens/SizeCompetitionStrength_20260802_115434_results.csv")
 
 #Sim 3.1 Background recruitment
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/BackRecruit_Sens/BackgroundRecruitment_20260802_025433_results.csv")
+makeCalculatedStats("Simulation_Results/3.1_Extended_Sensitivity/BackRecruit_Sens/BackgroundRecruitment_20260802_025433_results.csv")
 
 #Sim 3.1 Maturity Age
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/3.1_Extended_Sensitivity/MaturityAge_Sens/MaturityAge_20260802_071441_results.csv")
+makeCalculatedStats("Simulation_Results/3.1_Extended_Sensitivity/MaturityAge_Sens/MaturityAge_20260802_071441_results.csv")
 
 #Sim 5 intial placement
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/5_InitialPlacement/InitialPlacement_20260802_215722_results.csv")
+makeCalculatedStats("Simulation_Results/5_InitialPlacement/InitialPlacement_20260802_215722_results.csv")
 
 #Sim 4 - Full model runs
 #Sim 4 only RPS CHECK
-makeCalculatedStats("C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/RPS_Model/my_run_20260724_174603_results.csv")
+makeCalculatedStats("Simulation_Results/4_Base_model_exploration/RPS_Model/my_run_20260724_174603_results.csv")
 
 
 #Sim 4 - Full model runs: both big files COMBINED into one calculated table
 makeCalculatedStats(
-  c("C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Full_Model/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv",
-    "C:/Users/dell/Documents/Research Project 2/Simulation_Results/4_Base_model_exploration/Full_Model/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv"),
+  c("Simulation_Results/4_Base_model_exploration/Full_Model/Run_20260726_Remaining_Basic_Model_Exploration/AllModels_sweep_20260726_153222_results.csv",
+    "Simulation_Results/4_Base_model_exploration/Full_Model/Full_Run_20260724_Classic-RPS-Linear-Neutral_n357_reef50_t1000_r30/my_run_20260724_192134_results.csv"),
   out_name = "Sim4_FullModel_combined")
