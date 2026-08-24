@@ -87,13 +87,8 @@ getKeepSameOptions <- function() {
   }
 }
 
-#Function for gathering all setup information from the user.
-#Asks the questions in three grouped, ordered sections so the flow reads
-#top-to-bottom: ENVIRONMENT (reef size, simulation length, disturbance, habitat),
-#then COMMUNITY (species count, individuals, growth, reproduction, interaction
-#matrix), then RUN (colony placement and replicates). Fully-random setup skips
-#all of it and samples everything.
-#Returns the info list; the single setup summary is printed later by reefSetUp.
+# Gather all setup choices from the user, in three sections: Environment, Community,
+# Run. Fully-random setup samples everything. Returns the info list.
 getSpeciesInfo <- function() {
 
    #Setup mode decides how every following question is asked
@@ -284,12 +279,8 @@ DEFAULTS <- list(
   sim_max = 250)
 
 
-#Smallest reef size that comfortably fits a given number of colonies.
-#Random placement keeps colonies spaced apart (a candidate is rejected when it
-#sits within one cell of another, dx <= 1 and dy <= 1), so an N x N reef can hold
-#at most ceil(N/2)^2 colonies. We require at least TWICE that capacity so the reef
-#is never more than ~half full, which keeps random placement fast and reliable.
-#Returns the smallest reef size meeting that, never below absolute_min.
+# Smallest reef size holding at least 2x the colonies (so it stays ~half full and
+# random placement is fast). Never below absolute_min.
 minReefSizeForIndividuals <- function(total_individuals, absolute_min = 5) {
   reef_size <- absolute_min
   while (ceiling(reef_size / 2)^2 < 2 * total_individuals) {
@@ -299,18 +290,13 @@ minReefSizeForIndividuals <- function(total_individuals, absolute_min = 5) {
 }
 
 
-#How many spaced-apart colonies a rectangular X by Y reef can hold. Random
-#placement rejects a candidate within one cell of another, so roughly one colony
-#fits per 2x2 block: ceil(x/2) * ceil(y/2).
+# Spaced-apart colony capacity of an X by Y reef (~one per 2x2 block).
 reefCapacity <- function(reef_x, reef_y) {
   ceiling(reef_x / 2) * ceiling(reef_y / 2)
 }
 
 
-#Grow a rectangular reef until it can comfortably hold all the colonies (at least
-#TWICE capacity, so it is never more than ~half full and placement stays fast).
-#The shorter side is grown first so the reef does not become extremely elongated.
-#Returns c(reef_x, reef_y), each never below absolute_min.
+# Grow a reef until it holds 2x the colonies (shorter side first). Returns c(x, y).
 growReefToFit <- function(reef_x, reef_y, total_individuals, absolute_min = 5) {
   reef_x <- max(reef_x, absolute_min)
   reef_y <- max(reef_y, absolute_min)
@@ -530,14 +516,8 @@ return(coords)
 }
 
 
-# --------------------------------------------------------------------
-#  CLUSTERED placement (aggregated point pattern): all founders packed into ONE
-#  sub-region of the reef, mimicking a single settlement patch. A random cluster
-#  centre is chosen and every founder is placed uniformly at random inside a box
-#  ~1/3 of each reef dimension around it (clamped to the reef), keeping the same
-#  minimum spacing as random placement (candidates within a 3x3 box are rejected).
-#  Returns a list of c(x, y) pairs, one per individual.
-# --------------------------------------------------------------------
+# Clustered placement: all founders packed into one ~1/3-size box around a random
+# centre, with the same minimum spacing as random placement. Returns c(x, y) pairs.
 clusteredCoordinates <- function(total_individuals, reef_x, reef_y) {
   cw <- max(3L, floor(reef_x / 3)); ch <- max(3L, floor(reef_y / 3))
   cx <- sample(seq_len(reef_x), 1); cy <- sample(seq_len(reef_y), 1)
@@ -563,14 +543,8 @@ clusteredCoordinates <- function(total_individuals, reef_x, reef_y) {
 }
 
 
-# --------------------------------------------------------------------
-#  SPREAD placement (over-dispersed / regular point pattern): founders placed as
-#  evenly across the reef as possible. Farthest-point sampling - the first founder
-#  is random, and each subsequent one is the best of a batch of random candidates,
-#  chosen to MAXIMISE its minimum distance to the founders already placed (with the
-#  same minimum-spacing rejection). Yields an even, lattice-like arrangement.
-#  Returns a list of c(x, y) pairs, one per individual.
-# --------------------------------------------------------------------
+# Spread placement: over-dispersed by farthest-point sampling (each founder is the
+# best of a candidate batch, maximising min distance to those placed). Returns c(x, y).
 spreadCoordinates <- function(total_individuals, reef_x, reef_y, n_candidates = 60L) {
   coords <- list(c(sample(seq_len(reef_x), 1), sample(seq_len(reef_y), 1)))
 
@@ -759,10 +733,8 @@ createCorals<- function(reef_x,
 }
 
 
-#Function to either manually enter or randomise trait generation
-#Each species has a growth trait (1-GROWTH_MAX) plus its reproduction traits and its
-#row/column in the interaction matrix. All interactions (who overgrows whom) are set
-#by that matrix - there are no attack/defence/neutrality traits.
+# Build species_traits: a growth trait per species (manual or random), reproduction
+# traits, and the interaction matrix (the sole interaction mechanism) attached.
 createSpeciesTraits <- function(n_species, trait_mode,
                                 setup_mode = 3, reproduction_enabled = FALSE,
                                 interaction_mode = "random",
@@ -832,8 +804,7 @@ createSpeciesTraits <- function(n_species, trait_mode,
 }
 
 
-#Function for running the entire set up of the reef environment
-#Can run multiple replicates (simulations with same or randomized parameters)
+# Run the entire reef setup, across one or more replicates.
 reefSetUp <- function(){
     #Gather every setup choice from the user (reef parameters first, then coral)
     info <- getSpeciesInfo()
@@ -1057,18 +1028,9 @@ reefSetUp <- function(){
 }
 
 
-##Functions to generate coordinates for particular shapes in a grid
-#Which funciton is used is based on number of indiviudals
-#as well as selection of "shape" format in reef generation
+## Shape placement: equally-spaced coordinates, chosen by individual count.
 
-#Shapes should mean all coral are equally spaced from one another
-#Should be able to work with all reef sizes (if large enough) and 
-#number of individuals down from 2 - many
-
-
-#Function if 2 individuals given
-#Generates them along a central line of equal distance
-#From sides
+# 2 individuals: a central line.
 linecoordinates <- function(reef_size){
 
   side <- reef_size * 0.4
@@ -1179,43 +1141,14 @@ polygoncoordinates <- function(reef_size, n_vertices){
   })
 }
 
-# ====================================================================
-#  PAIRWISE INTERACTION MATRIX (the sole interaction mechanism)
-# --------------------------------------------------------------------
-#  Every interaction in the model - who overgrows whom - is decided by one matrix:
-#
-#     M[i, j] = probability that species i overgrows species j on contact
-#               (rows = attacker, columns = occupant). The DIAGONAL holds the
-#               intraspecific probability (two colonies of the SAME species meeting).
-#
-#  Because every ordered pair (and the diagonal) gets its own value, ANY competition
-#  network can be expressed directly - transitive hierarchies, intransitive cycles of
-#  any length, nested cycles. A 0 entry means "never overgrows" - this is how
-#  NEUTRALITY is expressed (no separate rule). It is also the natural place to plug in
-#  an EMPIRICAL overgrowth matrix for calibration/validation (see the "supplied"
-#  build mode and readInteractionMatrixCSV()).
-#
-#  MECHANIC (see canTakeCell / resolveClaims in Sim_func.r):
-#    * canTakeCell is DETERMINISTIC: a takeover is POSSIBLE whenever M[i,j] > 0, so
-#      frontier detection and candidate gathering are simple. A 0 entry acts as a
-#      wall.
-#    * The single stochastic roll happens ONCE per contested cell in resolveClaims:
-#      each allowed claimant rolls its (size-adjusted) M[claimant, occupant];
-#      successes go into the winner draw (random among them). Empty cells, which have
-#      no incumbent to overgrow, are settled at random.
-#
-#  SIZE: overgrowthProbSized() adjusts M[i,j] by colony size according to the chosen
-#  size mode (none / ratio / logodds / additive - see below).
-#
-#  The matrix rides along as an ATTRIBUTE on species_traits (attachInteraction), so
-#  it reaches the combat functions through the existing species_traits argument
-#  without changing any function signatures.
-# ====================================================================
+# ---- Pairwise interaction matrix (the sole interaction mechanism) -----------
+# M[i, j] = P(species i overgrows species j) on contact (rows = attacker, cols =
+# occupant); diagonal = intraspecific. Any network is expressible; 0 = never
+# (neutrality). canTakeCell allows a takeover when M[i,j] > 0; resolveClaims rolls it
+# once per contested cell (size-adjusted). The matrix rides on species_traits as an
+# attribute (attachInteraction). Empirical matrices plug in via the "supplied" mode.
 
-
-# ====================================================================
-#  TUNING NUMBERS
-# ====================================================================
+# ---- Tuning numbers ----
 
 #Range that RANDOM matrix entries are drawn from (a probability per ordered pair).
 #Kept away from 0 and 1 so random networks are genuinely stochastic contests.
@@ -1228,18 +1161,9 @@ INTERACTION_PROB_MAX <- 0.90
 #contest; set to 0 for "same-species colonies never overgrow each other".
 INTRASPECIFIC_PROB_DEFAULT <- 0.5
 
-# --------------------------------------------------------------------
-#  SIZE INFLUENCE ON THE OVERGROWTH PROBABILITY  (log-ratio, the only size mode)
-#  How a colony's size shifts its base matrix probability. Two modes:
-#    "none"     - use the matrix entry as-is (no size effect)
-#    "logratio" - shift M in LOG-ODDS space by the LOG SIZE RATIO of the two colonies
-#                 actually in contact:
-#                     P = logistic( logit(M[i,j]) + beta_i * ln(size_i / size_j) )
-#                 where size is the colony's CELL COUNT (only the ratio matters) and
-#                 beta_i is the ATTACKER species' size sensitivity (per species; 0 =
-#                 unaffected, >0 = bigger helps, <0 = smaller helps). Log-scaled so a
-#                 3x size advantage helps but nowhere near 3x; hard 0/1 entries stay.
-#  INTERACTION_SIZE_MODE_DEFAULT is used when nothing else sets a mode.
+# Size influence on the overgrowth probability. "none" = matrix as-is; "logratio" =
+# shift in log-odds by beta_i * ln(size_i / size_j) (attacker sensitivity beta; only
+# the ratio matters, log-scaled, hard 0/1 entries stay). Default mode:
 INTERACTION_SIZE_MODE_DEFAULT <- "none"
 
 #Default per-species size-sensitivity magnitude (beta) for a size-affected species.
@@ -1248,11 +1172,8 @@ INTERACTION_SIZE_MODE_DEFAULT <- "none"
 INTERACTION_SIZE_BETA <- 0.5
 
 
-# --------------------------------------------------------------------
-#  Ask whether colony SIZE should influence the matrix probabilities. Only relevant
-#  when the matrix is enabled. Fully-random setup keeps it off (so random runs are
-#  not confounded). Returns "none" or "logratio".
-# --------------------------------------------------------------------
+# Ask whether colony size influences the matrix probabilities (off in random setup).
+# Returns "none" or "logratio".
 getInteractionSizeSetup <- function(setup_mode) {
   if (setup_mode == 3) {
     return("none")
@@ -1265,13 +1186,8 @@ getInteractionSizeSetup <- function(setup_mode) {
 }
 
 
-# --------------------------------------------------------------------
-#  Validate / normalise a SUPPLIED matrix (e.g. empirical overgrowth data) against
-#  the run's species. Accepts an unnamed matrix in species order, or a named one in
-#  any order (it is reordered to match). Probabilities are clamped to [0, 1]. The
-#  DIAGONAL is the intraspecific (same-species) probability: any NA diagonal entry is
-#  filled with INTRASPECIFIC_PROB_DEFAULT, a supplied diagonal value is kept.
-# --------------------------------------------------------------------
+# Validate/normalise a supplied matrix against the run's species: reorder named rows/
+# cols to match, clamp to [0, 1], fill any NA diagonal with the intraspecific default.
 validateInteractionMatrix <- function(M, species_names) {
   if (is.null(M)) {
     stop("Interaction matrix mode is 'supplied' but no matrix was given.")
@@ -1304,14 +1220,8 @@ validateInteractionMatrix <- function(M, species_names) {
 }
 
 
-# --------------------------------------------------------------------
-#  Build the N x N overgrowth-probability matrix.
-#    "random"   - each off-diagonal entry drawn from [INTERACTION_PROB_MIN, MAX]
-#    "manual"   - ask the user for P(i overgrows j) for every ordered pair
-#    "supplied" - validate/normalise a matrix passed in (empirical data)
-#  Rows = attacker, columns = occupant. The DIAGONAL holds the intraspecific
-#  (same-species) probability, defaulted to INTRASPECIFIC_PROB_DEFAULT.
-# --------------------------------------------------------------------
+# Build the N x N overgrowth matrix: "random" (draw off-diagonals), "manual" (prompt
+# each pair), or "supplied" (validate a passed-in matrix). Diagonal = intraspecific.
 buildInteractionMatrix <- function(species_names, mode = "random", supplied = NULL) {
   if (mode == "supplied") {
     return(validateInteractionMatrix(supplied, species_names))
@@ -1346,34 +1256,21 @@ buildInteractionMatrix <- function(species_names, mode = "random", supplied = NU
 }
 
 
-# --------------------------------------------------------------------
-#  Build a default per-species size-impact table (for the "additive" size mode):
-#  one row per species with a `small` and `large` probability adjustment, both 0 by
-#  default (no size effect). These are ADDED to the attacker's overgrowth
-#  probability when it is small / large respectively.
-# --------------------------------------------------------------------
+# Default per-species size betas: no effect (all 0).
 defaultSizeBeta <- function(species_names) {
   setNames(rep(0, length(species_names)), species_names)
 }
 
 
-# --------------------------------------------------------------------
-#  Random per-species size sensitivities (beta) for the log-ratio mode: each species
-#  gets a random sign x INTERACTION_SIZE_BETA (some benefit from being larger, some
-#  from being smaller). Used when the size effect is switched on at random.
-# --------------------------------------------------------------------
+# Random per-species size betas (log-ratio mode): random sign x INTERACTION_SIZE_BETA.
 randomSizeBeta <- function(species_names) {
   setNames(sample(c(-1, 1), length(species_names), replace = TRUE) * INTERACTION_SIZE_BETA,
            species_names)
 }
 
 
-# --------------------------------------------------------------------
-#  Read an empirical overgrowth matrix from a CSV for calibration/validation.
-#  Expects a square table whose first column and header row are the species names
-#  (any order) and whose cells are overgrowth probabilities (0-1) or percentages
-#  (0-100, auto-detected and rescaled). Returned validated against species_names.
-# --------------------------------------------------------------------
+# Read an empirical overgrowth matrix from a CSV (species names in first col/header;
+# cells as probabilities or percentages, auto-detected). Validated against species_names.
 readInteractionMatrixCSV <- function(path, species_names) {
   raw <- read.csv(path, row.names = 1, check.names = FALSE, stringsAsFactors = FALSE)
   M   <- as.matrix(raw)
@@ -1386,11 +1283,8 @@ readInteractionMatrixCSV <- function(path, species_names) {
 }
 
 
-# --------------------------------------------------------------------
-#  Attach / read the interaction config on species_traits. Stored as an attribute
-#  so it travels with species_traits through every combat function unchanged.
-#  The config is a list(enabled = logical, matrix = the N x N matrix or NULL).
-# --------------------------------------------------------------------
+# Attach the interaction config on species_traits (an attribute) so it travels through
+# the combat functions. list(enabled, matrix, size_mode, size_beta).
 attachInteraction <- function(species_traits, enabled, matrix = NULL,
                               size_mode = INTERACTION_SIZE_MODE_DEFAULT,
                               size_beta = NULL) {
@@ -1437,13 +1331,8 @@ sizeBetaFor <- function(species, interaction) {
 }
 
 
-# --------------------------------------------------------------------
-#  Probability that attacker_species overgrows occupant_species on contact.
-#  Returns 0 when the feature is off, the matrix is missing, the pair is unknown, or
-#  the entry is 0/NA ("never overgrows"). A SAME-species pair reads the matrix
-#  DIAGONAL (the intraspecific probability), so intraspecific competition lives on
-#  the one matrix too. This is the ONE place a size adjustment is later applied.
-# --------------------------------------------------------------------
+# P(attacker overgrows occupant) on contact; 0 if off/missing/unknown/0-entry. A same-
+# species pair reads the diagonal. (Fast path via cached integer indices.)
 overgrowthProb <- function(attacker_species, occupant_species, interaction) {
   if (is.null(interaction) || !isTRUE(interaction$enabled) ||
       is.null(interaction$matrix)) {
@@ -1473,17 +1362,8 @@ overgrowthProb <- function(attacker_species, occupant_species, interaction) {
 }
 
 
-# --------------------------------------------------------------------
-#  Overgrowth probability for a specific ATTACKER colony against a specific OCCUPANT
-#  colony, with the SIZE influence applied. This is the value actually rolled in
-#  resolveClaims. Both are coral objects (need $species and $size, a cell count).
-#    "none"     - the base matrix entry, unchanged.
-#    "logratio" - shift the base in log-odds space by the log size ratio of the two
-#                 colonies in contact, scaled by the ATTACKER species' sensitivity:
-#                     P = logistic( logit(base) + beta_i * ln(size_i / size_j) )
-#                 Bigger attacker (beta>0) -> more likely; log-scaled so a 3x size
-#                 edge helps but nowhere near 3x. Hard 0/1 entries stay hard.
-# --------------------------------------------------------------------
+# Overgrowth probability for a specific attacker vs occupant colony, size-adjusted
+# (the value rolled in resolveClaims). "logratio" shifts the base by beta * ln(ratio).
 overgrowthProbSized <- function(attacker, occupant, interaction) {
   base <- overgrowthProb(attacker$species, occupant$species, interaction)
   #Hard 0/1 entries stay hard (neutrality / certainty are absolute; logit undefined)
@@ -1506,9 +1386,7 @@ overgrowthProbSized <- function(attacker, occupant, interaction) {
 }
 
 
-# --------------------------------------------------------------------
-#  One-line description of the interaction config, for the setup summary.
-# --------------------------------------------------------------------
+# One-line description of the interaction config, for the setup summary.
 describeInteraction <- function(species_traits) {
   it <- getInteraction(species_traits)
   if (!isTRUE(it$enabled) || is.null(it$matrix)) {
@@ -1522,17 +1400,8 @@ describeInteraction <- function(species_traits) {
 }
 
 
-# --------------------------------------------------------------------
-#  Print the species interaction matrix as a simple, readable table. Every species
-#  is pitted against every other, showing P(row species overgrows column species):
-#    Rows    = attacker (the species trying to take a cell)
-#    Columns = occupant (the species being grown over)
-#    Diagonal= intraspecific (two colonies of the SAME species meeting)
-#    0       = never overgrows (neutrality / a wall)
-#  When the size mode is "additive", each species' small/large probability
-#  adjustments are printed on two lines just beneath its row. Returns the numeric
-#  matrix invisibly so it can also be used in code.
-# --------------------------------------------------------------------
+# Print the interaction matrix as a readable table (rows overgrow columns; diagonal =
+# intraspecific; 0 = never). Returns the matrix invisibly.
 printInteractionMatrix <- function(species_traits, digits = 2) {
   it <- getInteraction(species_traits)
   if (!isTRUE(it$enabled) || is.null(it$matrix)) {
@@ -1580,11 +1449,7 @@ printInteractionMatrix <- function(species_traits, digits = 2) {
 }
 
 
-# --------------------------------------------------------------------
-#  Build a plotmath label for one species: the species name with its size sensitivity
-#  beta as a SUPERSCRIPT (log-ratio mode). Zero (or unset) is omitted, so a species
-#  with no size effect is just its name.  e.g. Sp1 with beta +0.5 -> Sp1^{b=+0.5}
-# --------------------------------------------------------------------
+# plotmath label: species name with size beta as a superscript (omitted if 0).
 speciesSizeLabel <- function(sp_name, size_beta) {
   b <- 0
   if (!is.null(size_beta) && sp_name %in% names(size_beta)) b <- size_beta[[sp_name]]
@@ -1593,11 +1458,7 @@ speciesSizeLabel <- function(sp_name, size_beta) {
 }
 
 
-# --------------------------------------------------------------------
-#  Build a plotmath label for a species' GROWTH number carrying its (optional) growth
-#  size sensitivity gamma as a SUPERSCRIPT. Zero, unset, or the effect being OFF is
-#  omitted.  `growth_size` is from getGrowthSize (may be NULL).  e.g. 3^{g=+0.1}
-# --------------------------------------------------------------------
+# plotmath label: growth number with growth-size gamma as a superscript (omitted if 0/off).
 growthSizeLabel <- function(growth_value, sp_name, growth_size) {
   g <- 0
   if (!is.null(growth_size) && isTRUE(growth_size$enabled) &&
@@ -1609,19 +1470,9 @@ growthSizeLabel <- function(growth_value, sp_name, growth_size) {
 }
 
 
-# --------------------------------------------------------------------
-#  PLOT the species interaction matrix as a table of cells (a separate figure, drawn
-#  to the current graphics device), styled like plotSpeciesTraits: every value sits
-#  in a bordered box, only the SPECIES-NAME boxes are filled with the species colour,
-#  and the interaction cells are plain white (no shading). Rows = attacker, columns =
-#  occupant; the number in each cell is P(row overgrows column). Each ROW-header box
-#  shows the species name (with its interaction size impact as a superscript =
-#  large-colony and subscript = small-colony adjustment) and, beneath it, that
-#  species' growth rate (which likewise carries its growth size effect as a
-#  super/subscript when that effect is on). The top column headers are plain names.
-#  Pass `corals` (e.g. sim$corals) to use the live colony colours; otherwise the base
-#  species palette is used.
-# --------------------------------------------------------------------
+# Plot the interaction matrix as a table figure: species-name boxes (filled with the
+# species colour, row headers also showing size beta + growth rate) and white P(row
+# overgrows column) cells. Pass `corals` for live colony colours.
 plotInteractionMatrix <- function(species_traits, corals = NULL,
                                   title = "Species interaction matrix") {
   it <- getInteraction(species_traits)
