@@ -29,6 +29,8 @@ Model/
 ├── Code_Specific_Sims/      # per-experiment run scripts (sensitivity, robustness, ...)
 ├── Interaction_Matrices/    # empirical / derived interaction matrices
 └── Analysis_Code/           # analysis and summary scripts
+    ├── Empirical_Matrices.r  # builds the empirical networks (Logan, Connell/Heron, ...)
+    └── Habitat_Comparison.r  # natural-reef vs aquarium configurations + run drivers (Aim 2)
 ```
 
 ## Running the model

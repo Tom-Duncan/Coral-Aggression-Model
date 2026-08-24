@@ -1,7 +1,7 @@
 #Source files containing necessary functions
 
-#Set working directory first
-setwd("C:/Users/dell/Documents/Research Project 2/Modelling")
+# Run this script from the repository root (the folder that contains "Model/").
+# All source() paths below are relative to that directory.
 
 #Size helper: colony cell count -> % reef cover (for reproduction + metrics)
 source("Model/Size_Impact_Functions.r")
