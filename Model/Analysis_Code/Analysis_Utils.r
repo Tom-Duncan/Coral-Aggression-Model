@@ -1,11 +1,11 @@
 # Shared helpers for the results-summary scripts (definitions only, no side effects):
 # the scenario-ID codebook, Word/CSV table writers, the shared metric set, and
-# decomposeCombo(). Sourced by Summary_tables.r, Calculated_Stats.r and others.
+# decomposeCombo(). Sourced by Summary_Statistics_Tables.r and others.
 
 # --- shared paths ------------------------------------------------------------
 RESULTS_DIR     <- "Simulation_Results"
 summary_out_dir <- file.path(RESULTS_DIR, "ScenarioID_Sum_Table")   # tables + ID codebook
-calc_out_dir    <- summary_out_dir                                  # (Calculated_Stats.r alias)
+calc_out_dir    <- summary_out_dir                                  # (alias kept for the calculated-stats functions)
 registry_path   <- file.path(summary_out_dir, "scenario_ID_registry.csv")
 
 # --- community-level metrics summarised across the scripts -------------------

@@ -43,7 +43,7 @@ if (.have_dt) suppressMessages(library(data.table))
 }
 .cwm <- .ancestorWith("Model")
 MODEL_DIR    <- if (!is.na(.cwm)) file.path(.cwm, "Model") else "Model"          # fallback: relative to repo root
-REAL_INT_MAT <- file.path(MODEL_DIR, "Analysis_Code", "Empirical_Matrices.r")
+REAL_INT_MAT <- file.path(MODEL_DIR, "Analysis_Code", "Interaction_Matrices.r")
 MIA_MATRIX   <- file.path(MODEL_DIR, "Interaction_Matrices", "Mia's_Matrix.r")
 .resr <- .ancestorWith("Simulation_Results")
 RESULTS_DIR  <- if (!is.na(.resr)) file.path(.resr, "Simulation_Results") else "Simulation_Results"
@@ -588,7 +588,7 @@ runFinalSimulations <- function(M = NULL, community = "dai7", vary_growth = FALS
 #  RUN BOTH EMPIRICAL COMMUNITIES - Logan (Bermuda) and Heron (GBR)
 # -----------------------------------------------------------------------------
 #  Registry of the empirical communities available for the final experiment.
-#  Each name maps to a matrix object defined in Empirical_Matrices.r (10 species each,
+#  Each name maps to a matrix object defined in Interaction_Matrices.r (10 species each,
 #  richness-matched). Extend with dai7 / heron / logan10 / logan17 as needed.
 # =============================================================================
 FINAL_COMMUNITIES <- c(
