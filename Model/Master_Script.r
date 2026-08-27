@@ -1,5 +1,11 @@
-# Run this script from the repository root (the folder containing "Model/").
-# Source paths below are relative to that directory.
+# Resolve the repo root (the folder containing "Model/") so this runs from any
+# working directory; source paths below are then relative to it.
+setwd((function() {
+  a <- commandArgs(FALSE); f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
+  d <- normalizePath(if (length(f)) dirname(f[1]) else getwd(), mustWork = FALSE)
+  while (basename(d) != "Model" && !dir.exists(file.path(d, "Model")) && dirname(d) != d) d <- dirname(d)
+  if (basename(d) == "Model") dirname(d) else d
+})())
 
 source("Model/Size_Impact_Functions.r")     # cell count -> % cover
 source("Model/Intialisation_Functions.r")   # setup, colony creation, overgrowth matrix

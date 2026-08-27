@@ -5,6 +5,14 @@
 #simulation, so source the top half and run only the blocks you need.
 #The retention/loss analyses need run_index.rds from Consolidate_Datasets.r.
 
+# Resolve the repo root (folder containing "Model/") so this works from any directory.
+setwd((function() {
+  a <- commandArgs(FALSE); f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
+  d <- normalizePath(if (length(f)) dirname(f[1]) else getwd(), mustWork = FALSE)
+  while (basename(d) != "Model" && !dir.exists(file.path(d, "Model")) && dirname(d) != d) d <- dirname(d)
+  if (basename(d) == "Model") dirname(d) else d
+})())
+
 source("Model/Analysis_Code/Analysis_Utils.r")
 
 
